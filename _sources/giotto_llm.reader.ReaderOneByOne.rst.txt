@@ -1,0 +1,26 @@
+giotto\_llm.reader.ReaderOneByOne
+=================================
+
+.. currentmodule:: giotto_llm.reader
+
+.. autoclass:: ReaderOneByOne
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ReaderOneByOne.__init__
+      ~ReaderOneByOne.read_tasks
+   
+   
+
+   
+   
+   

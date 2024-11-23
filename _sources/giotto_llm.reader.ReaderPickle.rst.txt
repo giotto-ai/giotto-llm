@@ -1,0 +1,26 @@
+giotto\_llm.reader.ReaderPickle
+===============================
+
+.. currentmodule:: giotto_llm.reader
+
+.. autoclass:: ReaderPickle
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ReaderPickle.__init__
+      ~ReaderPickle.read_tasks
+   
+   
+
+   
+   
+   

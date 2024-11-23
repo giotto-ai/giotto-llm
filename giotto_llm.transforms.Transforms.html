@@ -1,0 +1,550 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>giotto_llm.transforms.Transforms &mdash; giotto-llm v0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2fea6348"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="giotto_llm.type_aliases" href="giotto_llm.type_aliases.html" />
+    <link rel="prev" title="giotto_llm.transforms.transform_task" href="giotto_llm.transforms.transform_task.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            giotto-llm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="giotto_llm.html">giotto_llm</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.bucket.html">giotto_llm.bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.causal_lm.html">giotto_llm.causal_lm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.consts.html">giotto_llm.consts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.data.html">giotto_llm.data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.finetuning.html">giotto_llm.finetuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.generate_messages.html">giotto_llm.generate_messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.logs.html">giotto_llm.logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.online_fine_tuning.html">giotto_llm.online_fine_tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.parallelize.html">giotto_llm.parallelize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.plot.html">giotto_llm.plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.prompts.html">giotto_llm.prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.reader.html">giotto_llm.reader</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="giotto_llm.transforms.html">giotto_llm.transforms</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.transforms.backtransform_test_output.html">giotto_llm.transforms.backtransform_test_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.transforms.transform_task.html">giotto_llm.transforms.transform_task</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">giotto_llm.transforms.Transforms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#giotto_llm.transforms.Transforms"><code class="docutils literal notranslate"><span class="pre">Transforms</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.transforms.html#giotto_llm.transforms.Transforms"><code class="docutils literal notranslate"><span class="pre">Transforms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.transforms.html#giotto_llm.transforms.transform_task"><code class="docutils literal notranslate"><span class="pre">transform_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.type_aliases.html">giotto_llm.type_aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.utils.html">giotto_llm.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.validation.html">giotto_llm.validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.wrapper.html">giotto_llm.wrapper</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">giotto-llm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="giotto_llm.html">giotto_llm</a></li>
+          <li class="breadcrumb-item"><a href="giotto_llm.transforms.html">giotto_llm.transforms</a></li>
+      <li class="breadcrumb-item active">giotto_llm.transforms.Transforms</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/giotto_llm.transforms.Transforms.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="giotto-llm-transforms-transforms">
+<h1>giotto_llm.transforms.Transforms<a class="headerlink" href="#giotto-llm-transforms-transforms" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">giotto_llm.transforms.</span></span><span class="sig-name descname"><span class="pre">Transforms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'reorder'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'resample'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'all'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'foreground'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit_colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rigid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#giotto_llm.transforms.Transforms" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Transforms to apply to the task</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>test: randomly swap the test example with one of the training examples.</dt><dd><p>This is done before any reordering.</p>
+</dd>
+<dt>order: if ‘reorder’, reorder the training examples. If ‘resample’,</dt><dd><p>sub- or super-sample the training data, such that the number of
+training examples is randomized.</p>
+</dd>
+<dt>color: if ‘all’ randomize all colors. If ‘foreground’ randomize</dt><dd><p>all but 0 (background)</p>
+</dd>
+</dl>
+<p>limit_colors: if <cite>True</cite>, use the smallest number of different colors possible.
+rigid: Do a random rigid transform (rotation + mirror)
+max_tokens: If given, subsample the task to keep the number of task tokens below</p>
+<blockquote>
+<div><p>this number (not counting test output)</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.__init__" title="Link to this definition"></a></dt>
+<dd><p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.__init__" title="giotto_llm.transforms.Transforms.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(**data)</p></td>
+<td><p>Create a new model by parsing and validating input data from keyword arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">construct</span></code>([_fields_set])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.copy" title="giotto_llm.transforms.Transforms.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(*[, include, exclude, update, deep])</p></td>
+<td><p>Returns a copy of the model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code>(*[, include, exclude, by_alias, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_orm</span></code>(obj)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">json</span></code>(*[, include, exclude, by_alias, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_construct" title="giotto_llm.transforms.Transforms.model_construct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_construct</span></code></a>([_fields_set])</p></td>
+<td><p>Creates a new instance of the <cite>Model</cite> class with validated data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_copy" title="giotto_llm.transforms.Transforms.model_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_copy</span></code></a>(*[, update, deep])</p></td>
+<td><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/serialization/#model_copy">https://docs.pydantic.dev/2.10/concepts/serialization/#model_copy</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_dump" title="giotto_llm.transforms.Transforms.model_dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_dump</span></code></a>(*[, mode, include, exclude, ...])</p></td>
+<td><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump">https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_dump_json" title="giotto_llm.transforms.Transforms.model_dump_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_dump_json</span></code></a>(*[, indent, include, ...])</p></td>
+<td><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump_json">https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump_json</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_json_schema" title="giotto_llm.transforms.Transforms.model_json_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_json_schema</span></code></a>([by_alias, ref_template, ...])</p></td>
+<td><p>Generates a JSON schema for a model class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_parametrized_name" title="giotto_llm.transforms.Transforms.model_parametrized_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_parametrized_name</span></code></a>(params)</p></td>
+<td><p>Compute the class name for parametrizations of generic classes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_post_init" title="giotto_llm.transforms.Transforms.model_post_init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_post_init</span></code></a>(_BaseModel__context)</p></td>
+<td><p>Override this method to perform additional initialization after <cite>__init__</cite> and <cite>model_construct</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_rebuild" title="giotto_llm.transforms.Transforms.model_rebuild"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_rebuild</span></code></a>(*[, force, raise_errors, ...])</p></td>
+<td><p>Try to rebuild the pydantic-core schema for the model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_validate" title="giotto_llm.transforms.Transforms.model_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_validate</span></code></a>(obj, *[, strict, ...])</p></td>
+<td><p>Validate a pydantic model instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_validate_json" title="giotto_llm.transforms.Transforms.model_validate_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_validate_json</span></code></a>(json_data, *[, strict, ...])</p></td>
+<td><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/json/#json-parsing">https://docs.pydantic.dev/2.10/concepts/json/#json-parsing</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_validate_strings" title="giotto_llm.transforms.Transforms.model_validate_strings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_validate_strings</span></code></a>(obj, *[, strict, context])</p></td>
+<td><p>Validate the given object with string data against the Pydantic model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_file</span></code>(path, *[, content_type, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_obj</span></code>(obj)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_raw</span></code>(b, *[, content_type, encoding, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">schema</span></code>([by_alias, ref_template])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">schema_json</span></code>(*[, by_alias, ref_template])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_forward_refs</span></code>(**localns)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(value)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_computed_fields</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_config" title="giotto_llm.transforms.Transforms.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
+<td><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_extra" title="giotto_llm.transforms.Transforms.model_extra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_extra</span></code></a></p></td>
+<td><p>Get extra fields set during validation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_fields</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.transforms.Transforms.model_fields_set" title="giotto_llm.transforms.Transforms.model_fields_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_fields_set</span></code></a></p></td>
+<td><p>Returns the set of fields that have been explicitly set on this model instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">order</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">color</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">limit_colors</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rigid</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_tokens</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AbstractSetIntStr</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MappingIntStrAny</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AbstractSetIntStr</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MappingIntStrAny</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.copy" title="Link to this definition"></a></dt>
+<dd><p>Returns a copy of the model.</p>
+<dl class="simple">
+<dt>!!! warning “Deprecated”</dt><dd><p>This method is now deprecated; use <cite>model_copy</cite> instead.</p>
+</dd>
+</dl>
+<p>If you need <cite>include</cite> or <cite>exclude</cite>, use:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span> <span class="pre">{test=&quot;skip&quot;</span> <span class="pre">lint=&quot;skip&quot;}</span>
+<span class="pre">data</span> <span class="pre">=</span> <span class="pre">self.model_dump(include=include,</span> <span class="pre">exclude=exclude,</span> <span class="pre">round_trip=True)</span>
+<span class="pre">data</span> <span class="pre">=</span> <span class="pre">{**data,</span> <span class="pre">**(update</span> <span class="pre">or</span> <span class="pre">{})}</span>
+<span class="pre">copied</span> <span class="pre">=</span> <span class="pre">self.model_validate(data)</span>
+<span class="pre">`</span></code></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>include: Optional set or mapping specifying which fields to include in the copied model.
+exclude: Optional set or mapping specifying which fields to exclude in the copied model.
+update: Optional dictionary of field-value pairs to override field values in the copied model.
+deep: If True, the values of fields that are Pydantic models will be deep-copied.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A copy of the model with included, excluded and updated fields as specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'frozen':</span> <span class="pre">True}</span></em><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_construct">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_construct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_fields_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_construct" title="Link to this definition"></a></dt>
+<dd><p>Creates a new instance of the <cite>Model</cite> class with validated data.</p>
+<p>Creates a new model setting <cite>__dict__</cite> and <cite>__pydantic_fields_set__</cite> from trusted or pre-validated data.
+Default values are respected, but no other validation is performed.</p>
+<dl>
+<dt>!!! note</dt><dd><p><cite>model_construct()</cite> generally respects the <cite>model_config.extra</cite> setting on the provided model.
+That is, if <cite>model_config.extra == ‘allow’</cite>, then all extra passed values are added to the model instance’s <cite>__dict__</cite>
+and <cite>__pydantic_extra__</cite> fields. If <cite>model_config.extra == ‘ignore’</cite> (the default), then all extra passed values are ignored.
+Because no validation is performed with a call to <cite>model_construct()</cite>, having <cite>model_config.extra == ‘forbid’</cite> does not result in
+an error if extra values are passed, but they will be ignored.</p>
+</dd>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>_fields_set: A set of field names that were originally explicitly set during instantiation. If provided,</dt><dd><p>this is directly used for the [<cite>model_fields_set</cite>][pydantic.BaseModel.model_fields_set] attribute.
+Otherwise, the field names from the <cite>values</cite> argument will be used.</p>
+</dd>
+</dl>
+<p>values: Trusted or pre-validated data dictionary.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A new instance of the <cite>Model</cite> class with validated data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_copy">
+<span class="sig-name descname"><span class="pre">model_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_copy" title="Link to this definition"></a></dt>
+<dd><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/serialization/#model_copy">https://docs.pydantic.dev/2.10/concepts/serialization/#model_copy</a></p>
+<p>Returns a copy of the model.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>update: Values to change/add in the new model. Note: the data is not validated</dt><dd><p>before creating the new model. You should trust this data.</p>
+</dd>
+</dl>
+<p>deep: Set to <cite>True</cite> to make a deep copy of the model.</p>
+</dd>
+<dt>Returns:</dt><dd><p>New model instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_dump">
+<span class="sig-name descname"><span class="pre">model_dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'json'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'python'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'python'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_trip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'warn'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'error'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize_as_any</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_dump" title="Link to this definition"></a></dt>
+<dd><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump">https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump</a></p>
+<p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>mode: The mode in which <cite>to_python</cite> should run.</dt><dd><p>If mode is ‘json’, the output will only contain JSON serializable types.
+If mode is ‘python’, the output may contain non-JSON-serializable Python objects.</p>
+</dd>
+</dl>
+<p>include: A set of fields to include in the output.
+exclude: A set of fields to exclude from the output.
+context: Additional context to pass to the serializer.
+by_alias: Whether to use the field’s alias in the dictionary key if defined.
+exclude_unset: Whether to exclude fields that have not been explicitly set.
+exclude_defaults: Whether to exclude fields that are set to their default value.
+exclude_none: Whether to exclude fields that have a value of <cite>None</cite>.
+round_trip: If True, dumped values should be valid as input for non-idempotent types such as Json[T].
+warnings: How to handle serialization errors. False/”none” ignores them, True/”warn” logs errors,</p>
+<blockquote>
+<div><p>“error” raises a [<cite>PydanticSerializationError</cite>][pydantic_core.PydanticSerializationError].</p>
+</div></blockquote>
+<p>serialize_as_any: Whether to serialize fields with duck-typing serialization behavior.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A dictionary representation of the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_dump_json">
+<span class="sig-name descname"><span class="pre">model_dump_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IncEx</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_trip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'warn'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'error'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize_as_any</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_dump_json" title="Link to this definition"></a></dt>
+<dd><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump_json">https://docs.pydantic.dev/2.10/concepts/serialization/#modelmodel_dump_json</a></p>
+<p>Generates a JSON representation of the model using Pydantic’s <cite>to_json</cite> method.</p>
+<dl>
+<dt>Args:</dt><dd><p>indent: Indentation to use in the JSON output. If None is passed, the output will be compact.
+include: Field(s) to include in the JSON output.
+exclude: Field(s) to exclude from the JSON output.
+context: Additional context to pass to the serializer.
+by_alias: Whether to serialize using field aliases.
+exclude_unset: Whether to exclude fields that have not been explicitly set.
+exclude_defaults: Whether to exclude fields that are set to their default value.
+exclude_none: Whether to exclude fields that have a value of <cite>None</cite>.
+round_trip: If True, dumped values should be valid as input for non-idempotent types such as Json[T].
+warnings: How to handle serialization errors. False/”none” ignores them, True/”warn” logs errors,</p>
+<blockquote>
+<div><p>“error” raises a [<cite>PydanticSerializationError</cite>][pydantic_core.PydanticSerializationError].</p>
+</div></blockquote>
+<p>serialize_as_any: Whether to serialize fields with duck-typing serialization behavior.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A JSON string representation of the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_extra">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_extra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_extra" title="Link to this definition"></a></dt>
+<dd><p>Get extra fields set during validation.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A dictionary of extra fields, or <cite>None</cite> if <cite>config.extra</cite> is not set to <cite>“allow”</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_fields_set">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_fields_set</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_fields_set" title="Link to this definition"></a></dt>
+<dd><p>Returns the set of fields that have been explicitly set on this model instance.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>A set of strings representing the fields that have been set,</dt><dd><p>i.e. that were not filled from defaults.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_json_schema">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_alias:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'#/$defs/{model}'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_generator:</span> <span class="pre">type[~pydantic.json_schema.GenerateJsonSchema]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'pydantic.json_schema.GenerateJsonSchema'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode:</span> <span class="pre">~typing.Literal['validation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'serialization']</span> <span class="pre">=</span> <span class="pre">'validation'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_json_schema" title="Link to this definition"></a></dt>
+<dd><p>Generates a JSON schema for a model class.</p>
+<dl>
+<dt>Args:</dt><dd><p>by_alias: Whether to use attribute aliases or not.
+ref_template: The reference template.
+schema_generator: To override the logic used to generate the JSON schema, as a subclass of</p>
+<blockquote>
+<div><p><cite>GenerateJsonSchema</cite> with your desired modifications</p>
+</div></blockquote>
+<p>mode: The mode in which to generate the schema.</p>
+</dd>
+<dt>Returns:</dt><dd><p>The JSON schema for the given model class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_parametrized_name">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_parametrized_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_parametrized_name" title="Link to this definition"></a></dt>
+<dd><p>Compute the class name for parametrizations of generic classes.</p>
+<p>This method can be overridden to achieve a custom naming scheme for generic BaseModels.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>params: Tuple of types of the class. Given a generic class</dt><dd><p><cite>Model</cite> with 2 type variables and a concrete model <cite>Model[str, int]</cite>,
+the value <cite>(str, int)</cite> would be passed to <cite>params</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>String representing the new class where <cite>params</cite> are passed to <cite>cls</cite> as type variables.</p>
+</dd>
+<dt>Raises:</dt><dd><p>TypeError: Raised when trying to generate concrete names for non-generic models.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_BaseModel__context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_post_init" title="Link to this definition"></a></dt>
+<dd><p>Override this method to perform additional initialization after <cite>__init__</cite> and <cite>model_construct</cite>.
+This is useful if you want to do some validation that requires the entire model to be initialized.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_rebuild">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_rebuild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_namespace_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_types_namespace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MappingNamespace</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_rebuild" title="Link to this definition"></a></dt>
+<dd><p>Try to rebuild the pydantic-core schema for the model.</p>
+<p>This may be necessary when one of the annotations is a ForwardRef which could not be resolved during
+the initial attempt to build the schema, and automatic rebuilding fails.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>force: Whether to force the rebuilding of the model schema, defaults to <cite>False</cite>.
+raise_errors: Whether to raise errors, defaults to <cite>True</cite>.
+_parent_namespace_depth: The depth level of the parent namespace, defaults to 2.
+_types_namespace: The types namespace, defaults to <cite>None</cite>.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Returns <cite>None</cite> if the schema is already “complete” and rebuilding was not required.
+If rebuilding _was_ required, returns <cite>True</cite> if rebuilding was successful, otherwise <cite>False</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_validate">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_validate" title="Link to this definition"></a></dt>
+<dd><p>Validate a pydantic model instance.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>obj: The object to validate.
+strict: Whether to enforce types strictly.
+from_attributes: Whether to extract data from object attributes.
+context: Additional context to pass to the validator.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValidationError: If the object could not be validated.</p>
+</dd>
+<dt>Returns:</dt><dd><p>The validated model instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_validate_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_validate_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytearray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_validate_json" title="Link to this definition"></a></dt>
+<dd><p>Usage docs: <a class="reference external" href="https://docs.pydantic.dev/2.10/concepts/json/#json-parsing">https://docs.pydantic.dev/2.10/concepts/json/#json-parsing</a></p>
+<p>Validate the given JSON data against the Pydantic model.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>json_data: The JSON data to validate.
+strict: Whether to enforce types strictly.
+context: Extra variables to pass to the validator.</p>
+</dd>
+<dt>Returns:</dt><dd><p>The validated Pydantic model.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValidationError: If <cite>json_data</cite> is not a JSON string or the object could not be validated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.transforms.Transforms.model_validate_strings">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_validate_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#giotto_llm.transforms.Transforms.model_validate_strings" title="Link to this definition"></a></dt>
+<dd><p>Validate the given object with string data against the Pydantic model.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>obj: The object containing string data to validate.
+strict: Whether to enforce types strictly.
+context: Extra variables to pass to the validator.</p>
+</dd>
+<dt>Returns:</dt><dd><p>The validated Pydantic model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="giotto_llm.transforms.transform_task.html" class="btn btn-neutral float-left" title="giotto_llm.transforms.transform_task" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="giotto_llm.type_aliases.html" class="btn btn-neutral float-right" title="giotto_llm.type_aliases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Matteo Caorsi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

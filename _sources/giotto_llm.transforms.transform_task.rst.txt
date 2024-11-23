@@ -1,0 +1,6 @@
+giotto\_llm.transforms.transform\_task
+======================================
+
+.. currentmodule:: giotto_llm.transforms
+
+.. autofunction:: transform_task

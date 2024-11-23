@@ -1,0 +1,43 @@
+giotto\_llm.data
+================
+
+.. automodule:: giotto_llm.data
+   :members:
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      series_to_oai_causal_lm
+      series_to_oai_vision
+      task_to_image
+      task_to_oai_causal_lm
+      task_to_oai_vision
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: class.rst
+   
+      ConversationDataset
+      Dataset
+   
+   
+
+   
+   
+   
+
+
+

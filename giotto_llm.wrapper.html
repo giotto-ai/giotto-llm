@@ -1,0 +1,200 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>giotto_llm.wrapper &mdash; giotto-llm v0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2fea6348"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="giotto_llm.wrapper.EvaluationConfig" href="giotto_llm.wrapper.EvaluationConfig.html" />
+    <link rel="prev" title="giotto_llm.validation" href="giotto_llm.validation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            giotto-llm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="giotto_llm.html">giotto_llm</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.bucket.html">giotto_llm.bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.causal_lm.html">giotto_llm.causal_lm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.consts.html">giotto_llm.consts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.data.html">giotto_llm.data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.finetuning.html">giotto_llm.finetuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.generate_messages.html">giotto_llm.generate_messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.logs.html">giotto_llm.logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.online_fine_tuning.html">giotto_llm.online_fine_tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.parallelize.html">giotto_llm.parallelize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.plot.html">giotto_llm.plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.prompts.html">giotto_llm.prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.reader.html">giotto_llm.reader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.transforms.html">giotto_llm.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.type_aliases.html">giotto_llm.type_aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.utils.html">giotto_llm.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.validation.html">giotto_llm.validation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">giotto_llm.wrapper</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.wrapper.EvaluationConfig.html">giotto_llm.wrapper.EvaluationConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.wrapper.ModelWrapper.html">giotto_llm.wrapper.ModelWrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#giotto_llm.wrapper.EvaluationConfig"><code class="docutils literal notranslate"><span class="pre">EvaluationConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#giotto_llm.wrapper.EvaluationConfig.model_config"><code class="docutils literal notranslate"><span class="pre">EvaluationConfig.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#giotto_llm.wrapper.ModelWrapper"><code class="docutils literal notranslate"><span class="pre">ModelWrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#giotto_llm.wrapper.ModelWrapper.evaluate"><code class="docutils literal notranslate"><span class="pre">ModelWrapper.evaluate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">giotto-llm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="giotto_llm.html">giotto_llm</a></li>
+      <li class="breadcrumb-item active">giotto_llm.wrapper</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/giotto_llm.wrapper.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-giotto_llm.wrapper">
+<span id="giotto-llm-wrapper"></span><h1>giotto_llm.wrapper<a class="headerlink" href="#module-giotto_llm.wrapper" title="Link to this heading"></a></h1>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="giotto_llm.wrapper.EvaluationConfig.html#giotto_llm.wrapper.EvaluationConfig" title="giotto_llm.wrapper.EvaluationConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EvaluationConfig</span></code></a>(*[, n_attempts, ...])</p></td>
+<td><p>Config for customizing evaluation behavior.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="giotto_llm.wrapper.ModelWrapper.html#giotto_llm.wrapper.ModelWrapper" title="giotto_llm.wrapper.ModelWrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelWrapper</span></code></a>([model_id, quantization, config])</p></td>
+<td><p>Baseclass for a unified interface between models.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="giotto_llm.wrapper.EvaluationConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">giotto_llm.wrapper.</span></span><span class="sig-name descname"><span class="pre">EvaluationConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_attempts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_transforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_dataloader_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_resize_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_tokens_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_generation_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{'max_new_tokens':</span> <span class="pre">1024,</span> <span class="pre">'num_return_sequences':</span> <span class="pre">1}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#giotto_llm.wrapper.EvaluationConfig" title="Link to this definition"></a></dt>
+<dd><p>Config for customizing evaluation behavior.</p>
+<dl>
+<dt>Args:</dt><dd><p>n_attempts: how many attempts to return. If <cite>None</cite> returns all.
+n_transforms: do multiple predictions per task with a different transform.</p>
+<blockquote>
+<div><p>Requires that random transforms is used.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>batch_size: the batch size. Batch sizes different than 1 can change the result</dt><dd><p>due to numerical stability, so test for each model.</p>
+</dd>
+</dl>
+<p>n_dataloader_workers: number of worker subprocesses used by the DataLoader
+image_resize_factor: the upscaling factor of images in multi-modal models
+input_tokens_limit: limit the number of tokens of the training examples and test input, by subsampling</p>
+<blockquote>
+<div><p>the training examples.</p>
+</div></blockquote>
+<p>save_generation_metadata: if <cite>True</cite> save additional metadata in ‘./generation_metadata’.
+generation_config: parameters passed to the model.generate method. Typically used to set</p>
+<blockquote>
+<div><p>generation/sampling strategy via <cite>num_beams</cite>, <cite>temperature</cite> etc.. <cite>num_return_sequences=n</cite> will
+generate <cite>n</cite> responses per input.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="giotto_llm.wrapper.EvaluationConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'protected_namespaces':</span> <span class="pre">()}</span></em><a class="headerlink" href="#giotto_llm.wrapper.EvaluationConfig.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="giotto_llm.wrapper.ModelWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">giotto_llm.wrapper.</span></span><span class="sig-name descname"><span class="pre">ModelWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantization</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'no'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'4bit-nf4'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'4bit-dq-nf4'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'4bit-fp4'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'4bit-dq-fp4'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'8bit-6'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'8bit-5'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'8bit-4'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#giotto_llm.wrapper.ModelWrapper" title="Link to this definition"></a></dt>
+<dd><p>Baseclass for a unified interface between models.</p>
+<p>Assumes an underlying PyTorch model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.wrapper.ModelWrapper.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="giotto_llm.wrapper.EvaluationConfig.html#giotto_llm.wrapper.EvaluationConfig" title="giotto_llm.wrapper.EvaluationConfig"><span class="pre">EvaluationConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EvaluationConfig(n_attempts=None,</span> <span class="pre">n_transforms=1,</span> <span class="pre">batch_size=1,</span> <span class="pre">n_dataloader_workers=2,</span> <span class="pre">image_resize_factor=3,</span> <span class="pre">input_tokens_limit=None,</span> <span class="pre">save_generation_metadata=False,</span> <span class="pre">generation_config={'max_new_tokens':</span> <span class="pre">1024,</span> <span class="pre">'num_return_sequences':</span> <span class="pre">1})</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#giotto_llm.wrapper.ModelWrapper.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Make predictions for all tasks.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="giotto_llm.validation.html" class="btn btn-neutral float-left" title="giotto_llm.validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="giotto_llm.wrapper.EvaluationConfig.html" class="btn btn-neutral float-right" title="giotto_llm.wrapper.EvaluationConfig" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Matteo Caorsi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

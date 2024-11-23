@@ -1,0 +1,30 @@
+giotto\_llm.logs
+================
+
+.. automodule:: giotto_llm.logs
+   :members:
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      get_named_logger
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

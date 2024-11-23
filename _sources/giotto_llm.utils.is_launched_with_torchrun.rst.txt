@@ -1,0 +1,6 @@
+giotto\_llm.utils.is\_launched\_with\_torchrun
+==============================================
+
+.. currentmodule:: giotto_llm.utils
+
+.. autofunction:: is_launched_with_torchrun

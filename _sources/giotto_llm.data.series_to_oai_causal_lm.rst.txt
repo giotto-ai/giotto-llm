@@ -1,0 +1,6 @@
+giotto\_llm.data.series\_to\_oai\_causal\_lm
+============================================
+
+.. currentmodule:: giotto_llm.data
+
+.. autofunction:: series_to_oai_causal_lm

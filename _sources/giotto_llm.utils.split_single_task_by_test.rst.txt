@@ -1,0 +1,6 @@
+giotto\_llm.utils.split\_single\_task\_by\_test
+===============================================
+
+.. currentmodule:: giotto_llm.utils
+
+.. autofunction:: split_single_task_by_test

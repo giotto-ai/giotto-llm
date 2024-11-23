@@ -1,0 +1,6 @@
+giotto\_llm.data.task\_to\_oai\_vision
+======================================
+
+.. currentmodule:: giotto_llm.data
+
+.. autofunction:: task_to_oai_vision

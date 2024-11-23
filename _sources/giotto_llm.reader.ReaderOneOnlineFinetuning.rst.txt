@@ -1,0 +1,26 @@
+giotto\_llm.reader.ReaderOneOnlineFinetuning
+============================================
+
+.. currentmodule:: giotto_llm.reader
+
+.. autoclass:: ReaderOneOnlineFinetuning
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ReaderOneOnlineFinetuning.__init__
+      ~ReaderOneOnlineFinetuning.read_tasks
+   
+   
+
+   
+   
+   

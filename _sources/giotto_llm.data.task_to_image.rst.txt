@@ -1,0 +1,6 @@
+giotto\_llm.data.task\_to\_image
+================================
+
+.. currentmodule:: giotto_llm.data
+
+.. autofunction:: task_to_image

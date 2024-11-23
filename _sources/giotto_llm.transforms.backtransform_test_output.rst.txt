@@ -1,0 +1,6 @@
+giotto\_llm.transforms.backtransform\_test\_output
+==================================================
+
+.. currentmodule:: giotto_llm.transforms
+
+.. autofunction:: backtransform_test_output

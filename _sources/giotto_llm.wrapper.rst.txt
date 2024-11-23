@@ -1,0 +1,32 @@
+giotto\_llm.wrapper
+===================
+
+.. automodule:: giotto_llm.wrapper
+   :members:
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: class.rst
+   
+      EvaluationConfig
+      ModelWrapper
+   
+   
+
+   
+   
+   
+
+
+

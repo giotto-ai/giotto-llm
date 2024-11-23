@@ -1,0 +1,47 @@
+﻿giotto\_llm
+===========
+
+.. automodule:: giotto_llm
+   :members:
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: module.rst
+
+   bucket
+   causal_lm
+   consts
+   data
+   finetuning
+   generate_messages
+   logs
+   online_fine_tuning
+   parallelize
+   plot
+   prompts
+   reader
+   transforms
+   type_aliases
+   utils
+   validation
+   wrapper
+

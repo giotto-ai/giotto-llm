@@ -1,0 +1,43 @@
+giotto\_llm.wrapper.ModelWrapper
+================================
+
+.. currentmodule:: giotto_llm.wrapper
+
+.. autoclass:: ModelWrapper
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ModelWrapper.__init__
+      ~ModelWrapper.collate_fn_eval
+      ~ModelWrapper.collate_fn_train
+      ~ModelWrapper.evaluate
+      ~ModelWrapper.save_pretrained
+      ~ModelWrapper.untie_word_embeddings
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ModelWrapper.data_config
+      ~ModelWrapper.model_id
+      ~ModelWrapper.model_type
+      ~ModelWrapper.model
+      ~ModelWrapper.tokenizer
+      ~ModelWrapper.grid_formatter
+      ~ModelWrapper.generation_prompt_token_ids
+      ~ModelWrapper.output_token_ids
+   
+   

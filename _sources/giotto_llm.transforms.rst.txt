@@ -1,0 +1,39 @@
+giotto\_llm.transforms
+======================
+
+.. automodule:: giotto_llm.transforms
+   :members:
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      backtransform_test_output
+      transform_task
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: class.rst
+   
+      Transforms
+   
+   
+
+   
+   
+   
+
+
+

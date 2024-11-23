@@ -1,0 +1,35 @@
+giotto\_llm.reader
+==================
+
+.. automodule:: giotto_llm.reader
+   :members:
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: class.rst
+   
+      ReaderMany
+      ReaderManyOnlineFinetuning
+      ReaderOneByOne
+      ReaderOneOnlineFinetuning
+      ReaderPickle
+   
+   
+
+   
+   
+   
+
+
+

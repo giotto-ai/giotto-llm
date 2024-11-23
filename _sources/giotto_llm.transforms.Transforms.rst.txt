@@ -1,0 +1,64 @@
+giotto\_llm.transforms.Transforms
+=================================
+
+.. currentmodule:: giotto_llm.transforms
+
+.. autoclass:: Transforms
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Transforms.__init__
+      ~Transforms.construct
+      ~Transforms.copy
+      ~Transforms.dict
+      ~Transforms.from_orm
+      ~Transforms.json
+      ~Transforms.model_construct
+      ~Transforms.model_copy
+      ~Transforms.model_dump
+      ~Transforms.model_dump_json
+      ~Transforms.model_json_schema
+      ~Transforms.model_parametrized_name
+      ~Transforms.model_post_init
+      ~Transforms.model_rebuild
+      ~Transforms.model_validate
+      ~Transforms.model_validate_json
+      ~Transforms.model_validate_strings
+      ~Transforms.parse_file
+      ~Transforms.parse_obj
+      ~Transforms.parse_raw
+      ~Transforms.schema
+      ~Transforms.schema_json
+      ~Transforms.update_forward_refs
+      ~Transforms.validate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Transforms.model_computed_fields
+      ~Transforms.model_config
+      ~Transforms.model_extra
+      ~Transforms.model_fields
+      ~Transforms.model_fields_set
+      ~Transforms.test
+      ~Transforms.order
+      ~Transforms.color
+      ~Transforms.limit_colors
+      ~Transforms.rigid
+      ~Transforms.max_tokens
+   
+   

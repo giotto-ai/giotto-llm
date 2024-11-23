@@ -1,0 +1,6 @@
+giotto\_llm.utils.is\_tf32\_supported
+=====================================
+
+.. currentmodule:: giotto_llm.utils
+
+.. autofunction:: is_tf32_supported

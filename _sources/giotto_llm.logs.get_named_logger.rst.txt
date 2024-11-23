@@ -1,0 +1,6 @@
+giotto\_llm.logs.get\_named\_logger
+===================================
+
+.. currentmodule:: giotto_llm.logs
+
+.. autofunction:: get_named_logger

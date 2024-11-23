@@ -1,0 +1,28 @@
+giotto\_llm.reader.ReaderMany
+=============================
+
+.. currentmodule:: giotto_llm.reader
+
+.. autoclass:: ReaderMany
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ReaderMany.__init__
+      ~ReaderMany.read_challenges
+      ~ReaderMany.read_solutions
+      ~ReaderMany.read_tasks
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+giotto\_llm.utils.get\_half\_precision\_dtype
+=============================================
+
+.. currentmodule:: giotto_llm.utils
+
+.. autofunction:: get_half_precision_dtype

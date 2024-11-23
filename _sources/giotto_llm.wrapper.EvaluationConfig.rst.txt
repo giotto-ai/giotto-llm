@@ -1,0 +1,67 @@
+giotto\_llm.wrapper.EvaluationConfig
+====================================
+
+.. currentmodule:: giotto_llm.wrapper
+
+.. autoclass:: EvaluationConfig
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~EvaluationConfig.__init__
+      ~EvaluationConfig.check_generation_config
+      ~EvaluationConfig.construct
+      ~EvaluationConfig.copy
+      ~EvaluationConfig.dict
+      ~EvaluationConfig.from_orm
+      ~EvaluationConfig.json
+      ~EvaluationConfig.model_construct
+      ~EvaluationConfig.model_copy
+      ~EvaluationConfig.model_dump
+      ~EvaluationConfig.model_dump_json
+      ~EvaluationConfig.model_json_schema
+      ~EvaluationConfig.model_parametrized_name
+      ~EvaluationConfig.model_post_init
+      ~EvaluationConfig.model_rebuild
+      ~EvaluationConfig.model_validate
+      ~EvaluationConfig.model_validate_json
+      ~EvaluationConfig.model_validate_strings
+      ~EvaluationConfig.parse_file
+      ~EvaluationConfig.parse_obj
+      ~EvaluationConfig.parse_raw
+      ~EvaluationConfig.schema
+      ~EvaluationConfig.schema_json
+      ~EvaluationConfig.update_forward_refs
+      ~EvaluationConfig.validate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~EvaluationConfig.model_computed_fields
+      ~EvaluationConfig.model_config
+      ~EvaluationConfig.model_extra
+      ~EvaluationConfig.model_fields
+      ~EvaluationConfig.model_fields_set
+      ~EvaluationConfig.n_attempts
+      ~EvaluationConfig.n_transforms
+      ~EvaluationConfig.batch_size
+      ~EvaluationConfig.n_dataloader_workers
+      ~EvaluationConfig.image_resize_factor
+      ~EvaluationConfig.input_tokens_limit
+      ~EvaluationConfig.save_generation_metadata
+      ~EvaluationConfig.generation_config
+   
+   

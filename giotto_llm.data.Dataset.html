@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>giotto_llm.data.Dataset &mdash; giotto-llm v0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2fea6348"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="giotto_llm.finetuning" href="giotto_llm.finetuning.html" />
+    <link rel="prev" title="giotto_llm.data.ConversationDataset" href="giotto_llm.data.ConversationDataset.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            giotto-llm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="giotto_llm.html">giotto_llm</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.bucket.html">giotto_llm.bucket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.causal_lm.html">giotto_llm.causal_lm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.consts.html">giotto_llm.consts</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="giotto_llm.data.html">giotto_llm.data</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.series_to_oai_causal_lm.html">giotto_llm.data.series_to_oai_causal_lm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.series_to_oai_vision.html">giotto_llm.data.series_to_oai_vision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.task_to_image.html">giotto_llm.data.task_to_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.task_to_oai_causal_lm.html">giotto_llm.data.task_to_oai_causal_lm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.task_to_oai_vision.html">giotto_llm.data.task_to_oai_vision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.ConversationDataset.html">giotto_llm.data.ConversationDataset</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">giotto_llm.data.Dataset</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#giotto_llm.data.Dataset"><code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.html#giotto_llm.data.ConversationDataset"><code class="docutils literal notranslate"><span class="pre">ConversationDataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.html#giotto_llm.data.Dataset"><code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.html#giotto_llm.data.series_to_oai_causal_lm"><code class="docutils literal notranslate"><span class="pre">series_to_oai_causal_lm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.html#giotto_llm.data.series_to_oai_vision"><code class="docutils literal notranslate"><span class="pre">series_to_oai_vision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.html#giotto_llm.data.task_to_image"><code class="docutils literal notranslate"><span class="pre">task_to_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.html#giotto_llm.data.task_to_oai_causal_lm"><code class="docutils literal notranslate"><span class="pre">task_to_oai_causal_lm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="giotto_llm.data.html#giotto_llm.data.task_to_oai_vision"><code class="docutils literal notranslate"><span class="pre">task_to_oai_vision()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.finetuning.html">giotto_llm.finetuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.generate_messages.html">giotto_llm.generate_messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.logs.html">giotto_llm.logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.online_fine_tuning.html">giotto_llm.online_fine_tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.parallelize.html">giotto_llm.parallelize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.plot.html">giotto_llm.plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.prompts.html">giotto_llm.prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.reader.html">giotto_llm.reader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.transforms.html">giotto_llm.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.type_aliases.html">giotto_llm.type_aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.utils.html">giotto_llm.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.validation.html">giotto_llm.validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="giotto_llm.wrapper.html">giotto_llm.wrapper</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">giotto-llm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="giotto_llm.html">giotto_llm</a></li>
+          <li class="breadcrumb-item"><a href="giotto_llm.data.html">giotto_llm.data</a></li>
+      <li class="breadcrumb-item active">giotto_llm.data.Dataset</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/giotto_llm.data.Dataset.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="giotto-llm-data-dataset">
+<h1>giotto_llm.data.Dataset<a class="headerlink" href="#giotto-llm-data-dataset" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="giotto_llm.data.Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">giotto_llm.data.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="giotto_llm.transforms.Transforms.html#giotto_llm.transforms.Transforms" title="giotto_llm.transforms.Transforms"><span class="pre">Transforms</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Transforms(test=False,</span> <span class="pre">order=None,</span> <span class="pre">color=None,</span> <span class="pre">limit_colors=False,</span> <span class="pre">rigid=False,</span> <span class="pre">max_tokens=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">messages_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextPromptBase</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PromptSolveShort(grid_formatter=GridFormatter(sE_token='&lt;|start_example|&gt;',</span> <span class="pre">eE_token='&lt;|end_example|&gt;',</span> <span class="pre">sI_token='&lt;|start_input|&gt;',</span> <span class="pre">eI_token='&lt;|end_input|&gt;',</span> <span class="pre">sO_token='&lt;|start_output|&gt;',</span> <span class="pre">eO_token='&lt;|end_output|&gt;',</span> <span class="pre">sR_token='&lt;|start_row|&gt;',</span> <span class="pre">eR_token='&lt;|end_row|&gt;',</span> <span class="pre">c0='&lt;|color_0|&gt;',</span> <span class="pre">c1='&lt;|color_1|&gt;',</span> <span class="pre">c2='&lt;|color_2|&gt;',</span> <span class="pre">c3='&lt;|color_3|&gt;',</span> <span class="pre">c4='&lt;|color_4|&gt;',</span> <span class="pre">c5='&lt;|color_5|&gt;',</span> <span class="pre">c6='&lt;|color_6|&gt;',</span> <span class="pre">c7='&lt;|color_7|&gt;',</span> <span class="pre">c8='&lt;|color_8|&gt;',</span> <span class="pre">c9='&lt;|color_9|&gt;',</span> <span class="pre">color_separator_token=''))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'image-text-to-text'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'text-to-text'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'image-text-to-text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_resize_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#giotto_llm.data.Dataset" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+<p>Dataset class for tasks.</p>
+<p>Will split datasets to only have 1 test example automatically.
+Converts the task into an OAIMessage that can be collated by
+model-specific collate functions.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>tasks: the tasks
+transforms: the random transforms to apply to the tasks
+messages_fn: the prompt class
+image_resize_factor: Upscale the image with the given factor</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="giotto_llm.data.Dataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="giotto_llm.transforms.Transforms.html#giotto_llm.transforms.Transforms" title="giotto_llm.transforms.Transforms"><span class="pre">Transforms</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Transforms(test=False,</span> <span class="pre">order=None,</span> <span class="pre">color=None,</span> <span class="pre">limit_colors=False,</span> <span class="pre">rigid=False,</span> <span class="pre">max_tokens=None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">messages_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextPromptBase</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PromptSolveShort(grid_formatter=GridFormatter(sE_token='&lt;|start_example|&gt;',</span> <span class="pre">eE_token='&lt;|end_example|&gt;',</span> <span class="pre">sI_token='&lt;|start_input|&gt;',</span> <span class="pre">eI_token='&lt;|end_input|&gt;',</span> <span class="pre">sO_token='&lt;|start_output|&gt;',</span> <span class="pre">eO_token='&lt;|end_output|&gt;',</span> <span class="pre">sR_token='&lt;|start_row|&gt;',</span> <span class="pre">eR_token='&lt;|end_row|&gt;',</span> <span class="pre">c0='&lt;|color_0|&gt;',</span> <span class="pre">c1='&lt;|color_1|&gt;',</span> <span class="pre">c2='&lt;|color_2|&gt;',</span> <span class="pre">c3='&lt;|color_3|&gt;',</span> <span class="pre">c4='&lt;|color_4|&gt;',</span> <span class="pre">c5='&lt;|color_5|&gt;',</span> <span class="pre">c6='&lt;|color_6|&gt;',</span> <span class="pre">c7='&lt;|color_7|&gt;',</span> <span class="pre">c8='&lt;|color_8|&gt;',</span> <span class="pre">c9='&lt;|color_9|&gt;',</span> <span class="pre">color_separator_token=''))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'image-text-to-text'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'text-to-text'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'image-text-to-text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_resize_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#giotto_llm.data.Dataset.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#giotto_llm.data.Dataset.__init__" title="giotto_llm.data.Dataset.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(tasks[, transforms, messages_fn, ...])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="giotto_llm.data.ConversationDataset.html" class="btn btn-neutral float-left" title="giotto_llm.data.ConversationDataset" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="giotto_llm.finetuning.html" class="btn btn-neutral float-right" title="giotto_llm.finetuning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Matteo Caorsi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

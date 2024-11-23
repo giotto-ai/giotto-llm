@@ -1,0 +1,25 @@
+giotto\_llm.data.ConversationDataset
+====================================
+
+.. currentmodule:: giotto_llm.data
+
+.. autoclass:: ConversationDataset
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ConversationDataset.__init__
+   
+   
+
+   
+   
+   

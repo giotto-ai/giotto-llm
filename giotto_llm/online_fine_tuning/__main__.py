@@ -27,7 +27,7 @@ from giotto_llm.type_aliases import JSONTask
 from giotto_llm.utils import is_tf32_supported, split_tasks_by_test, write_json
 from giotto_llm.wrapper import EvaluationConfig
 
-CONFIG = {
+BASE_CONFIG = {
     "wrapper": CausalLMWrapper,
     "wrapper_kwargs": {
         "model_id": "",
@@ -37,6 +37,7 @@ CONFIG = {
         "batch_size": 1,
         "n_attempts": 2,
         "n_transforms": 4,
+        "rigid_transforms_all": False,
         "generation_config": {
             "max_new_tokens": 1024,
             "num_return_sequences": 1,
@@ -274,14 +275,6 @@ def run_inference(logger, task_name, demo_tasks, model_config, submission_save_p
                 }
             )
 
-            # plot_predictions(
-            #     demo_tasks,
-            #     test_id=idx_i,
-            #     predictions=attempts_task_id[-1].values(),
-            #     save_path=f"test_{idx_i}.png",
-            #     test_ouput_exists=False
-            # )
-
     with open(submission_save_path, "w") as f:
         json.dump({task_name: attempts_task_id}, f)
 
@@ -375,6 +368,9 @@ def main(
                 task_name=task_name,
                 demo_tasks=demo_tasks,
             )
+
+            logger.info("Length of train dataset: %d", len(train_dataset))
+
             eval_dataset = None
             if not config.kaggle_mode:
                 eval_dataset = get_eval_dataset(
@@ -429,11 +425,13 @@ def main(
 
             logger.info(" -- Evaluating Model --")
 
-            model_config = copy.deepcopy(CONFIG)
+            model_config = copy.deepcopy(BASE_CONFIG)
+            model_config["wrapper"] = wrapper_cls
             model_config["wrapper_kwargs"]["model_id"] = save_merged_model  # type: ignore
             model_config["evaluation_config"]["batch_size"] = config.eval_batch_size  # type: ignore
             model_config["evaluation_config"]["n_attempts"] = config.eval_n_attempts  # type: ignore
             model_config["evaluation_config"]["n_transforms"] = config.eval_n_transforms  # type: ignore
+            model_config["evaluation_config"]["rigid_transforms_all"] = config.eval_rigid_transforms_all  # type: ignore
             model_config["evaluation_config"]["generation_config"][  # type: ignore
                 "num_return_sequences"
             ] = config.eval_num_return_sequences
@@ -506,6 +504,7 @@ if __name__ == "__main__":
         eval_batch_size=args["eval_batch_size"],
         eval_n_attempts=args["eval_n_attempts"],
         eval_n_transforms=args["eval_n_transforms"],
+        eval_rigid_transforms_all=args["eval_rigid_transforms_all"],
         eval_num_return_sequences=args["eval_num_return_sequences"],
         eval_num_beams=args["eval_num_beams"],
         gradient_accumulation_steps=args["gradient_accumulation_steps"],

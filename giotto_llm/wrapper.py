@@ -32,23 +32,19 @@ class EvaluationConfig(BaseModel):
     """Config for customizing evaluation behavior.
 
     Args:
-        n_attempts: how many attempts to return. If `None` returns all.
-        n_transforms: do multiple predictions per task with a different transform.
-            Requires that random transforms is used.
-        batch_size: the batch size. Batch sizes different than 1 can change the result
-            due to numerical stability, so test for each model.
-        n_dataloader_workers: number of worker subprocesses used by the DataLoader
-        image_resize_factor: the upscaling factor of images in multi-modal models
-        input_tokens_limit: limit the number of tokens of the training examples and test input, by subsampling
-            the training examples.
-        save_generation_metadata: if `True` save additional metadata in './generation_metadata'.
-        generation_config: parameters passed to the model.generate method. Typically used to set
-            generation/sampling strategy via `num_beams`, `temperature` etc.. `num_return_sequences=n` will
-            generate `n` responses per input.
+        n_attempts: The number of attempts to return. If `None`, returns all attempts.
+        n_transforms: The number of predictions per task with a different transform. Requires the use of random transforms.
+        rigid_transforms_all: If `True`, applies all 8 rigid transforms to all tasks and then performs `n_transforms` using other transformations like color permutation, example re-ordering, etc.  Number of transoformed tasks will be 8 * n_transforms
+        batch_size: The batch size. Different batch sizes can affect the result due to numerical stability.
+        n_dataloader_workers: The number of worker subprocesses used by the DataLoader.
+        image_resize_factor: The upscaling factor of images in multi-modal models.
+        input_tokens_limit: Limits the number of tokens in the training examples and test input by subsampling the training examples.
+        save_generation_metadata: If `True`, saves additional metadata in './generation_metadata'.
+        generation_config: Parameters passed to the model.generate method. Typically used to set generation/sampling strategy via `num_beams`, `temperature`, etc. `num_return_sequences=n` will generate `n` responses per input.
     """
-
     n_attempts: int | None = Field(ge=1, default=None)
     n_transforms: int = Field(ge=1, default=1)
+    rigid_transforms_all: bool = False
     batch_size: int = Field(ge=1, default=1)
     n_dataloader_workers: int = Field(ge=1, default=psutil.cpu_count(logical=False))  # type: ignore
     image_resize_factor: int = 3
@@ -159,7 +155,7 @@ class ModelWrapper:
                     else "foreground"
                 ),
                 limit_colors=limit_colors,
-                rigid=True,
+                rigid=not config.rigid_transforms_all,
                 max_tokens=config.input_tokens_limit,
             )
         prompt_type = self.data_config["prompt_type"]
@@ -173,7 +169,9 @@ class ModelWrapper:
             model_type=self.model_type,
             transforms=transforms,
             image_resize_factor=config.image_resize_factor,
+            rigid_transforms_all=config.rigid_transforms_all
         )
+        print(f"RIGID_TRANSFORMS_ALL: {config.rigid_transforms_all},  DATASET LENGTH: {len(dataset)}")
         dataloader = DataLoader(
             dataset,
             batch_size=config.batch_size,
@@ -245,6 +243,8 @@ class ModelWrapper:
                 if attempt is None:
                     continue
                 task_id = dataset.keys[idx]
+                if config.rigid_transforms_all:
+                    task_id = task_id.split("@")[0]
                 task_grids[task_id].append(
                     backtransform_test_output(grid=attempt, backtransform=backtransform)
                 )
@@ -431,7 +431,8 @@ class ModelWrapper:
                 attempt_log_likelihoods[str(attempt)].append(task_log_likelihoods[split_task_id][i])
 
             grids = [json.loads(attempt) for attempt in attempt_log_likelihoods.keys()]
-            log_likelihoods = [np.mean(ll) for ll in attempt_log_likelihoods.values()]
+            #log_likelihoods = [np.mean(ll) for ll in attempt_log_likelihoods.values()] # MAYBE WE NEED TO EXP WITH MEAN
+            log_likelihoods = [np.sum(ll) for ll in attempt_log_likelihoods.values()] # AS THE ARChitect paper
 
             idx = np.argsort(log_likelihoods)[::-1]
             if n_attempts is not None:

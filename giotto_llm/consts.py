@@ -8,6 +8,7 @@ ROOT_PATH = pathlib.Path().cwd()
 NUMBER_OF_COLORS = 10
 MAX_GRID_SIZE = 30
 
+EMPTY_GRID: Grid = []
 DEFAULT_ATTEMPT: Grid = [[0, 0], [0, 0]]
 
 TYPES_OF_TRANSFORMS = {

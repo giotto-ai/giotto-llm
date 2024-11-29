@@ -108,18 +108,20 @@ class CausalLMWrapper(ModelWrapper):
             return_tensors="pt",
         )
         transformed_tasks = [example[1] for example in examples]
-        batch_indices = [example[2] for example in examples]
-        backtransforms = [example[3] for example in examples]
+        constraints = [example[2] for example in examples]
+        batch_indices = [example[3] for example in examples]
+        backtransforms = [example[4] for example in examples]
         return {
             "batch_inputs": batch_inputs,
             "batch_indices": batch_indices,
             "backtransforms": backtransforms,
             "transformed_tasks": transformed_tasks,
+            "constraints": constraints,
         }
 
     def collate_fn_train(
         self,
-        examples: list[tuple[OAIMessage, JSONTask, int, _BackTransformTestOutput]],  # type: ignore
+        examples: list[tuple[OAIMessage, JSONTask, dict[str, Any], int, _BackTransformTestOutput]],
         mask_inputs: bool = True,
     ) -> dict[str, Tensor]:
         """The collate function."""

@@ -9,6 +9,7 @@ import numpy as np
 import polars as pl
 import torch
 from PIL import Image
+from verificator.verifier import get_hard_constraints
 
 from .consts import DEFAULT_ATTEMPT
 from .prompts.consts import TYPES_OF_PROMPTS
@@ -50,7 +51,6 @@ class Dataset(torch.utils.data.Dataset):
         tasks: the tasks
         transforms: the random transforms to apply to the tasks
         messages_fn: the prompt class
-        image_resize_factor: Upscale the image with the given factor
     """
 
     def __init__(
@@ -59,7 +59,7 @@ class Dataset(torch.utils.data.Dataset):
         transforms: Transforms = Transforms(),
         messages_fn: TextPromptBase = PromptSolveShort(grid_formatter=GridFormatter()),
         model_type: Literal["image-text-to-text", "text-to-text"] = "image-text-to-text",
-        image_resize_factor: int = 3,
+        constraints_strategy: Literal["no", "token_subset", "valid"] = "valid",
     ):
 
         self.tasks = split_tasks_by_test(tasks)
@@ -71,25 +71,32 @@ class Dataset(torch.utils.data.Dataset):
         if model_type == "image-text-to-text" and transforms.limit_colors is False:
             raise RuntimeError("Image-models need to use the limit_colors transform")
         self.task_to_oai = (
-            partial(task_to_oai_vision, image_resize_factor=image_resize_factor)
+            partial(task_to_oai_vision)
             if model_type == "image-text-to-text"
             else task_to_oai_causal_lm
         )
+        self.constraints_strategy = constraints_strategy
 
     def __len__(self) -> int:
         """The size of the dataset."""
         return self.size
 
-    def __getitem__(self, idx: int) -> tuple[OAIMessage, JSONTask, int, _BackTransformTestOutput]:
+    def __getitem__(
+        self, idx: int
+    ) -> tuple[OAIMessage, JSONTask, dict[str, Any], int, _BackTransformTestOutput]:
         """Get transformed task in OAIMessage format
 
         Returns:
             OAIMessage, transformed task, task index and the backtransform
         """
         task = self.tasks[self.keys[idx]]
+        constraints = get_hard_constraints(task, 0) if self.constraints_strategy == "valid" else {}
         transformed_task, backtransform = transform_task(task=task, transforms=self.transforms)
+        if self.add_task_id is True:
+            transformed_task["task_id"] = self.keys[idx]  # type: ignore[assignment]
+
         oai_message = self.task_to_oai(task=transformed_task, messages_fn=self.messages_fn)
-        return oai_message, transformed_task, idx, backtransform
+        return oai_message, transformed_task, constraints, idx, backtransform
 
 
 class ConversationDataset(torch.utils.data.Dataset):
@@ -99,7 +106,6 @@ class ConversationDataset(torch.utils.data.Dataset):
         parquet_filename: the parquet file with conversations
         max_token_length: the maximum token length to allow
         model_type: the model type (image-text-to-text or text-to-text)
-        image_resize_factor: Upscale the image with the given factor
     """
 
     def __init__(
@@ -107,7 +113,6 @@ class ConversationDataset(torch.utils.data.Dataset):
         parquet_filename: str,
         max_token_length: int = 1_000_000,
         model_type: Literal["image-text-to-text", "text-to-text"] = "image-text-to-text",
-        image_resize_factor: int = 3,
     ):
         self.data = (
             pl.scan_parquet(parquet_filename)
@@ -117,7 +122,7 @@ class ConversationDataset(torch.utils.data.Dataset):
         )
 
         self.series_to_oai = (
-            partial(series_to_oai_vision, image_resize_factor=image_resize_factor)
+            partial(series_to_oai_vision)
             if model_type == "image-text-to-text"
             else series_to_oai_causal_lm
         )
@@ -166,9 +171,7 @@ def task_to_image(task: JSONTask) -> Image.Image:
     return Image.fromarray(image)
 
 
-def task_to_oai_vision(
-    task: JSONTask, messages_fn: TextPromptBase, image_resize_factor: int = 3
-) -> OAIMessage:
+def task_to_oai_vision(task: JSONTask, messages_fn: TextPromptBase) -> OAIMessage:
     """Convert task to OAIMessage"""
     messages = messages_fn(task=task, idx_i=0)
     assert len(messages) == 3
@@ -178,7 +181,6 @@ def task_to_oai_vision(
         system_message=messages[0]["content"],
         user_message=messages[1]["content"],
         assistant_message=messages[2]["content"],
-        image_resize_factor=image_resize_factor,
     )
 
 
@@ -194,7 +196,7 @@ def task_to_oai_causal_lm(task: JSONTask, messages_fn: TextPromptBase) -> OAIMes
     )
 
 
-def series_to_oai_vision(series: pl.DataFrame, image_resize_factor: int = 3) -> OAIMessage:
+def series_to_oai_vision(series: pl.DataFrame) -> OAIMessage:
     """Convert series to OAIMessage"""
     transforms = series["transform"].item()
     message = series["messages"].item()
@@ -204,7 +206,6 @@ def series_to_oai_vision(series: pl.DataFrame, image_resize_factor: int = 3) -> 
         system_message=message[0]["content"],
         user_message=message[1]["content"],
         assistant_message=message[2]["content"],
-        image_resize_factor=image_resize_factor,
     )
 
 
@@ -223,7 +224,6 @@ def _create_oai_vision_message(
     system_message: str,
     user_message: str,
     assistant_message: str,
-    image_resize_factor: int = 3,
 ) -> OAIMessage:
     image = task_to_image(task)
 
@@ -242,9 +242,6 @@ def _create_oai_vision_message(
                 {
                     "type": "image",
                     "image": image,
-                    # Scale image up to prevent pixel-loss by Qwen
-                    "resized_width": image.size[0] * image_resize_factor,
-                    "resized_height": image.size[1] * image_resize_factor,
                 },
             ],
         },

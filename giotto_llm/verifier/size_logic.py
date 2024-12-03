@@ -1,8 +1,8 @@
 from collections import defaultdict
 from typing import Dict, List
 
+from ..type_aliases import Example, JSONTask, LogicRule
 from . import helper_functions
-from ..type_aliases import Example, LogicRule, JSONTask
 
 
 def input_output_have_always_same_size(task: JSONTask) -> bool:
@@ -45,8 +45,6 @@ def build(examples: List[Example]) -> Dict[str, LogicRule]:
             res[k].add(v)
     new_rules = {
         "ratio": (next(iter(res["ratio"])) if len(res["ratio"]) == 1 else None),
-        "fixed_size": (
-            next(iter(res["fixed_size"])) if len(res["fixed_size"]) == 1 else None
-        ),
+        "fixed_size": (next(iter(res["fixed_size"])) if len(res["fixed_size"]) == 1 else None),
     }
     return new_rules

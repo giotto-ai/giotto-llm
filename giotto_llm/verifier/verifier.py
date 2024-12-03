@@ -1,14 +1,7 @@
 from typing import Dict, List
 
-from . import (
-    color_logic,
-    helper_functions,
-    inclusion_logic,
-    size_logic,
-    symmetry_logic,
-)
-
-from ..type_aliases import Example, Grid, LogicRule, Response, JSONTask
+from ..type_aliases import Example, Grid, JSONTask, LogicRule, Response
+from . import color_logic, helper_functions, inclusion_logic, size_logic, symmetry_logic
 
 
 class Verifier:
@@ -26,8 +19,8 @@ class Verifier:
         self.logic.update(symmetry_logic.build(self.train))
         self.logic.update(size_logic.build(self.train))
         self.logic.update(color_logic.build(self.train))
-        self.logic.update(inclusion_logic.build(self.train)) 
-        #self.logic.update(shape_logic.build(self.train))
+        self.logic.update(inclusion_logic.build(self.train))
+        # self.logic.update(shape_logic.build(self.train))
 
         return self.logic
 
@@ -37,9 +30,7 @@ class Verifier:
     # Verifiers
     def verify_symmetry(self, input_grid: Grid, output_grid: Grid) -> List[str]:
         wrong = []
-        test_logic = symmetry_logic.example_logic(
-            {"input": input_grid, "output": output_grid}
-        )
+        test_logic = symmetry_logic.example_logic({"input": input_grid, "output": output_grid})
         # We first check if input and output have the same symmetries. All
         # symmetries of the input must be present in the output, but the output
         # might have more symmetries. Otherwise we check symmetries of the
@@ -63,9 +54,7 @@ class Verifier:
 
     def verify_size(self, input_grid: Grid, output_grid: Grid) -> List[str]:
         wrong = []
-        test_logic = size_logic.example_logic(
-            {"input": input_grid, "output": output_grid}
-        )
+        test_logic = size_logic.example_logic({"input": input_grid, "output": output_grid})
         ratio = helper_functions.grids_ratio(input_grid, output_grid)
         output_size = helper_functions.grid_size(output_grid)
         # We first check if we have a fixed ration. This is a stronger condition
@@ -81,9 +70,7 @@ class Verifier:
 
     def verify_color(self, input_grid: Grid, output_grid: Grid) -> List[str]:
         wrong = []
-        test_logic = color_logic.example_logic(
-            {"input": input_grid, "output": output_grid}
-        )
+        test_logic = color_logic.example_logic({"input": input_grid, "output": output_grid})
         if (
             len(self.logic["fixed_colors"])
             and not test_logic["fixed_colors"] == self.logic["fixed_colors"]
@@ -109,9 +96,7 @@ class Verifier:
 
     def verify_inclusion(self, input_grid: Grid, output_grid: Grid) -> List[str]:
         wrong = []
-        test_logic = inclusion_logic.example_logic(
-            {"input": input_grid, "output": output_grid}
-        )
+        test_logic = inclusion_logic.example_logic({"input": input_grid, "output": output_grid})
         for k, has_inclusion in test_logic.items():
             if self.logic[k] and not has_inclusion:
                 wrong.append(k)
@@ -168,7 +153,7 @@ class Verifier:
         wrong_checks += self.verify_size(input_grid, output_grid)
         wrong_checks += self.verify_color(input_grid, output_grid)
         wrong_checks += self.verify_inclusion(input_grid, output_grid)
-        #wrong_checks += self.verify_shape(input_grid, output_grid)
+        # wrong_checks += self.verify_shape(input_grid, output_grid)
         return wrong_checks
 
 
@@ -207,9 +192,7 @@ def get_hard_constraints(task_data: JSONTask, idx_i: int = 0) -> Dict[str, list]
     if len(colors["new_colors"]) > 0:
         res["colors"].update(list(input_colors) + colors["new_colors"])
     if len(colors["dropped_colors"]) > 0:
-        res["colors"].update(
-            [c for c in input_colors if c not in colors["dropped_colors"]]
-        )
+        res["colors"].update([c for c in input_colors if c not in colors["dropped_colors"]])
     if len(colors["fixed_colors"]) > 0:
         res["colors"].update(colors["fixed_colors"])
     res["colors"].update(all_output_colors)

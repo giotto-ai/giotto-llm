@@ -1,8 +1,8 @@
 from collections import defaultdict
 from typing import Dict, List
 
-from . import helper_functions
 from ..type_aliases import Example, Grid, LogicRule
+from . import helper_functions
 
 symmetry_functions = {
     "vertical_symmetry": helper_functions.has_vertical_symmetry,

@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Tuple
 
 import numpy as np
 
-from ..type_aliases import ColorList, ColorSet, Grid, Ratio, Size, JSONTask
+from ..type_aliases import ColorList, ColorSet, Grid, JSONTask, Ratio, Size
 
 FOLDER_PATH = "data/all_800/"
 

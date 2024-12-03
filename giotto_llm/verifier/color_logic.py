@@ -1,6 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
+from ..type_aliases import Example, LogicRule
 from .helper_functions import (
     almost_same_color_count,
     almost_same_color_ratio,
@@ -8,7 +9,6 @@ from .helper_functions import (
     get_all_colors_set,
     grid_size,
 )
-from ..type_aliases import Example, LogicRule
 
 COLORS = [
     "Black",
@@ -34,12 +34,8 @@ def example_logic(example: Example) -> Dict[str, LogicRule]:
         "new_colors": list(sorted(output_colors.difference(input_colors))),
         "dropped_colors": list(sorted(input_colors.difference(output_colors))),
         "all_colors": list(sorted(output_colors.union(input_colors))),
-        "same_color_count": almost_same_color_count(
-            example["input"], example["output"]
-        ),
-        "same_color_ratio": almost_same_color_ratio(
-            example["input"], example["output"]
-        ),
+        "same_color_count": almost_same_color_count(example["input"], example["output"]),
+        "same_color_ratio": almost_same_color_ratio(example["input"], example["output"]),
         "color_map": color_map,
         "inverse_color_map": inverse_color_map,
     }
@@ -55,9 +51,7 @@ def build_color_map(example: Example) -> Tuple[Dict[int, int], Dict[int, int]]:
     for ic, oc in zip(input_colors, output_colors):
         pre_color_map[ic].add(oc)
         pre_inverse_color_map[oc].add(ic)
-    color_map = {
-        k: head for k, (head, *tail) in pre_color_map.items() if len(tail) == 0
-    }
+    color_map = {k: head for k, (head, *tail) in pre_color_map.items() if len(tail) == 0}
     inverse_color_map = {
         k: head for k, (head, *tail) in pre_inverse_color_map.items() if len(tail) == 0
     }
@@ -83,24 +77,15 @@ def build(examples: List[Example]) -> Dict[str, LogicRule]:
     if all(new_colors == res["new_colors"][0] for new_colors in res["new_colors"]):
         # for every example, we always have the same color(s) added in the output
         new_rules["new_colors"] = list(res["new_colors"][0])
-    if all(
-        dropped_colors == res["dropped_colors"][0]
-        for dropped_colors in res["dropped_colors"]
-    ):
+    if all(dropped_colors == res["dropped_colors"][0] for dropped_colors in res["dropped_colors"]):
         # for every example, we always have the same color(s) added in the output
         new_rules["dropped_colors"] = list(res["dropped_colors"][0])
-    if all(
-        output_colors == res["fixed_colors"][0] for output_colors in res["fixed_colors"]
-    ):
+    if all(output_colors == res["fixed_colors"][0] for output_colors in res["fixed_colors"]):
         # for every example, we always have the same color(s) in the output
         new_rules["fixed_colors"] = list(res["fixed_colors"][0])
-    new_rules["same_colors"] = all(
-        len(new_colors) == 0 for new_colors in res["new_colors"]
-    )
+    new_rules["same_colors"] = all(len(new_colors) == 0 for new_colors in res["new_colors"])
     new_rules["same_color_count"] = all(res["same_color_count"])
     new_rules["same_color_ratio"] = all(res["same_color_ratio"])
     new_rules["has_color_map"] = all(len(cm) > 0 for cm in res["color_map"])
-    new_rules["has_inverse_color_map"] = all(
-        len(icm) > 0 for icm in res["inverse_color_map"]
-    )
+    new_rules["has_inverse_color_map"] = all(len(icm) > 0 for icm in res["inverse_color_map"])
     return new_rules

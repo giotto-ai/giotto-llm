@@ -56,10 +56,11 @@ class EvaluationConfig(BaseModel):
             generation/sampling strategy via `num_beams`, `temperature` etc.. `num_return_sequences=n` will
             generate `n` responses per input.
     """
+
     n_attempts: int | None = Field(ge=1, default=None)
     n_transforms: int = Field(ge=1, default=1)
     batch_size: int = Field(ge=1, default=1)
-    n_dataloader_workers: int = Field(ge=1, default=psutil.cpu_count(logical=False)) # type: ignore
+    n_dataloader_workers: int = Field(ge=1, default=psutil.cpu_count(logical=False))  # type: ignore
     save_generation_metadata: bool = False
     constraints_strategy: Literal["no", "token_subset", "valid"] = "valid"
     constraints_use_verifier_shapes: bool = True
@@ -580,12 +581,12 @@ class ModelWrapper:
     def _create_results(
         self,
         task_attempts: dict[str, list[Grid]],
+        constraints: dict[str, dict[str, Any]],
         n_attempts: int | None,
         task_log_probs: dict[str, list[float]],
         tasks: dict[str, JSONTask],
         weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]] = None,
-        threshold: float= None,
-        constraints: dict[str, dict[str, Any]],
+        threshold: float = None,
     ) -> dict[str, Attempts]:
         """Sort attempts by log-likelihood, merge and combine test examples from same tasks"""
         results: dict[str, Attempts] = defaultdict(lambda: defaultdict(list))
@@ -600,18 +601,20 @@ class ModelWrapper:
 
             if weight_method is None or threshold is None:
                 attempts = task_attempts[split_task_id]
-                 # There can be duplicate attempts, so mean the log likelihood of duplicates
-                 attempt_log_likelihoods: dict[str, list[float]] = defaultdict(list)
-                 for i, attempt in enumerate(attempts):
-                     attempt_log_likelihoods[str(attempt)].append(task_log_likelihoods[split_task_id][i])
-     
-                 grids = [json.loads(attempt) for attempt in attempt_log_likelihoods.keys()]
-                 log_likelihoods = [np.mean(ll) for ll in attempt_log_likelihoods.values()]
-     
-                 idx = np.argsort(log_likelihoods)[::-1]
-                 if n_attempts is not None:
-                     idx = idx[:n_attempts]
-                 results[task_id][test_idx] = [grids[i] for i in idx]
+                # There can be duplicate attempts, so mean the log likelihood of duplicates
+                attempt_log_likelihoods: dict[str, list[float]] = defaultdict(list)
+                for i, attempt in enumerate(attempts):
+                    attempt_log_likelihoods[str(attempt)].append(
+                        task_log_likelihoods[split_task_id][i]
+                    )
+
+                grids = [json.loads(attempt) for attempt in attempt_log_likelihoods.keys()]
+                log_likelihoods = [np.mean(ll) for ll in attempt_log_likelihoods.values()]
+
+                idx = np.argsort(log_likelihoods)[::-1]
+                if n_attempts is not None:
+                    idx = idx[:n_attempts]
+                results[task_id][test_idx] = [grids[i] for i in idx]
             else:
                 results[task_id][test_idx] = select_top_2(
                     attempts=task_attempts[split_task_id],

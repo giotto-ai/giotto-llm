@@ -3,8 +3,8 @@ from typing import Dict, List
 
 import numpy as np
 
-from . import helper_functions
 from ..type_aliases import Example, Grid, LogicRule
+from . import helper_functions
 
 transformations = {
     "identity": lambda x: x,
@@ -32,9 +32,7 @@ def does_first_contain_second(first_grid: Grid, second_grid: Grid) -> bool:
     return False
 
 
-def does_first_contain_second_with_symmetries(
-    first_grid: Grid, second_grid: Grid
-) -> bool:
+def does_first_contain_second_with_symmetries(first_grid: Grid, second_grid: Grid) -> bool:
     checks = []
     for k, transformation in transformations.items():
         second_grid_transformed = transformation(second_grid)

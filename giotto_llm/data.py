@@ -17,7 +17,7 @@ from .prompts.text_prompts import PromptSolveShort, TextPromptBase
 from .transforms import Transforms, _BackTransformTestOutput, transform_task
 from .type_aliases import JSONTask, OAIMessage
 from .utils import split_tasks_by_test
-from .verifier import get_hard_constraints
+from giotto_llm.verifier.verifier import get_hard_constraints
 
 # Keep "mixed colors" last so they are used less often
 # They are selected to maximize the dot product to the

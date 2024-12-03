@@ -1,24 +1,24 @@
 import hashlib
-from typing import Any
+from typing import Any, Dict, List, Tuple, Union
 
 import numpy as np
 import torch
 from numpy.typing import NDArray
-from verificator import inclusion_logic
-from verificator.verifier import get_hard_constraints
+from giotto_llm.verifier import inclusion_logic
+from giotto_llm.verifier.verifier import get_hard_constraints
 
-from llm_prompts.transforms import RIGID_TRANSFORMS
-from llm_prompts.type_aliases import Grid, JSONTask
+from giotto_llm.transforms import RIGID_TRANSFORMS
+from giotto_llm.type_aliases import Grid, JSONTask
 
 
 def select_top_2(
-    attempts: list[Grid],
-    log_probs: list[float],
+    attempts: List[Grid],
+    log_probs: List[torch.Tensor],
     task: JSONTask,
     weight_method: str,
     threshold: float,
-    constraints: dict[str, Any] = {},
-):
+    constraints: Dict[str, Any] = {},
+) -> List[Grid]:
     """Select the top 2 attempts"""
 
     # -------------------
@@ -70,7 +70,11 @@ def select_top_2(
     return subset
 
 
-def _full_grid_majority_vote(attempts, weights, threshold: float):
+def _full_grid_majority_vote(
+    attempts: List[Grid],
+    weights: np.ndarray,
+    threshold: float,
+) -> List[Grid]:
     mapping = _group_same([_numpy_to_hash(attempt) for attempt in attempts])
     score = {}
     for key, indices in mapping.items():
@@ -82,7 +86,11 @@ def _full_grid_majority_vote(attempts, weights, threshold: float):
     return subset
 
 
-def _pixelwise_majority_vote(attempts, weights, subset):
+def _pixelwise_majority_vote(
+    attempts: List[Grid],
+    weights: np.ndarray,
+    subset: List[Grid],
+) -> None:
     # first select most common shape
     # then vote per pixel
     mapping = _group_same([np.asarray(attempt).shape for attempt in attempts])
@@ -115,7 +123,12 @@ def _pixelwise_majority_vote(attempts, weights, subset):
             break
 
 
-def _filter_attempts_with_constraints(attempts, log_probs, task, constraints):
+def _filter_attempts_with_constraints(
+    attempts: List[Grid],
+    log_probs: List[torch.Tensor],
+    task: JSONTask,
+    constraints: Dict[str, Any],
+) -> Tuple[List[Grid], List[torch.Tensor]]:
     if len(constraints) == 0:
         constraints = get_hard_constraints(task, 0)
     constraints |= inclusion_logic.build(task["train"])
@@ -204,7 +217,7 @@ def _filter_attempts_with_constraints(attempts, log_probs, task, constraints):
     return filtered_attempts, filtered_log_probs
 
 
-def _is_subset(subset_array, main_array):
+def _is_subset(subset_array: np.ndarray, main_array: np.ndarray) -> bool:
     # Get the shapes of the main array and the subset array
     subset_shape = subset_array.shape
     main_shape = main_array.shape
@@ -225,13 +238,13 @@ def _is_subset(subset_array, main_array):
     return False  # No match found
 
 
-def _numpy_to_hash(x: NDArray[np.int8] | list[list[int]]) -> str:
+def _numpy_to_hash(x: Union[NDArray[np.int_], List[List[int]]]) -> str:
     """Convert numpy array to sha1 hash"""
-    return hashlib.sha1(np.ascontiguousarray(x, dtype=np.int8)).hexdigest()  # type: ignore[arg-type]
+    return hashlib.sha1(np.ascontiguousarray(x, dtype=np.int8)).hexdigest()  
 
 
-def _group_same(items):
-    mapping = {}
+def _group_same(items: List[Any]) -> Dict[Any, List[int]]:
+    mapping: Dict[Any, List[int]] = {}
     for i, item in enumerate(items):
         if item not in mapping:
             mapping[item] = []

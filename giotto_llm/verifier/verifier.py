@@ -126,8 +126,8 @@ def get_hard_constraints(task_data: JSONTask, idx_i: int = 0) -> Dict[str, Any]:
         output_x = input_x * ratio_x[1] // ratio_x[0]
         output_y = input_y * ratio_y[1] // ratio_y[0]
         res_size.add((output_x, output_y))
-    if size.get("fixed_size") is not None:
-        res_size.add(size["fixed_size"])
+    if (fixed_size := size.get("fixed_size")) is not None:
+        res_size.add(fixed_size)  # Ensure fixed_size is of type Tuple[int, int]
     # Convert sets to lists
     res_size_list = list(res_size)
     # Colors

@@ -3,6 +3,7 @@ import math
 import os
 from collections import Counter
 from typing import Any, Dict, List, Set, Tuple, Union, cast
+from numpy.typing import NDArray
 
 import numpy as np
 
@@ -103,9 +104,10 @@ def remove_color_from_grid(grid: Grid, color_to_remove: int) -> Grid:
     return cast(Grid, grid_array.tolist())
 
 
-def get_non_background_mask(grid: Grid, color: int) -> np.ndarray:
-    masked_grid = np.array(remove_color_from_grid(grid, color), dtype=int)
-    return masked_grid != 11
+def get_non_background_mask(grid: Grid, color: int) -> NDArray[np.bool_]:
+    grid_array: NDArray[np.int_] = np.array(remove_color_from_grid(grid, color), dtype=int)
+    mask: NDArray[np.bool_] = grid_array != 11
+    return mask
 
 
 # Grid Size-related Functions

@@ -13,7 +13,6 @@ import psutil
 import torch
 import transformers
 from pydantic import BaseModel, Field, ValidationError, validator
-from scipy.stats import mode
 from torch import Tensor, nn
 from torch.utils.data import DataLoader
 from transformers import GenerationConfig

@@ -157,7 +157,6 @@ if __name__ == "__main__":
         n_transforms=arguments.n_transforms,
         batch_size=arguments.batch_size,
         n_dataloader_workers=arguments.n_dataloader_workers,
-        image_resize_factor=arguments.image_resize_factor,
         input_tokens_limit=arguments.input_tokens_limit,
         save_generation_metadata=arguments.save_generation_metadata,
         generation_config={

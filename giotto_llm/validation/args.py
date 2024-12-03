@@ -38,12 +38,6 @@ def parse_arguments() -> EasyDict:
         help="One of [training, evaluation, test, full]",
     )
 
-    parser.add_argument(
-        "--image_resize_factor",
-        type=int,
-        default=3,
-        help="Image resizing for multi modal models",
-    )
 
     parser.add_argument(
         "--batch_size",
@@ -177,7 +171,6 @@ def parse_arguments() -> EasyDict:
             "finetuned_model_id": arguments.finetuned_model_id,
             "dataset_dir": arguments.dataset_dir,
             "dataset_type": arguments.dataset_type,
-            "image_resize_factor": arguments.image_resize_factor,
             "n_dataloader_workers": arguments.n_dataloader_workers,
             "batch_size": arguments.batch_size,
             "wrapper_cls_type": arguments.wrapper_cls_type,

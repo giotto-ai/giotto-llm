@@ -1,19 +1,18 @@
 import hashlib
-from typing import Any, Dict, List, Tuple, Union
-
+from typing import Any, Dict, List, Tuple, Union, cast
+import math
 import numpy as np
 import torch
 from numpy.typing import NDArray
 from giotto_llm.verifier import inclusion_logic
 from giotto_llm.verifier.verifier import get_hard_constraints
-
 from giotto_llm.transforms import RIGID_TRANSFORMS
 from giotto_llm.type_aliases import Grid, JSONTask
 
 
 def select_top_2(
     attempts: List[Grid],
-    log_probs: list[float],
+    log_probs: List[float],
     task: JSONTask,
     weight_method: str,
     threshold: float,
@@ -27,7 +26,9 @@ def select_top_2(
     # ------------------
     if len(attempts) < 2:
         return attempts
-    attempts, log_probs = _filter_attempts_with_constraints(attempts, log_probs, task, constraints)
+    attempts, log_probs = _filter_attempts_with_constraints(
+        attempts, log_probs, task, constraints
+    )
     if len(attempts) < 2:
         return attempts
 
@@ -36,19 +37,21 @@ def select_top_2(
             weights = np.ones(len(attempts)) / len(attempts)
         case "ll_sum":
             weights = torch.softmax(
-                torch.tensor([ll.sum() if ll is not None else -torch.inf for ll in log_probs]),
+                torch.tensor([ll if ll is not None else -float('inf') for ll in log_probs]),
                 dim=0,
             ).numpy()
         case "entropy":
             weights = torch.softmax(
                 torch.tensor(
                     [
-                        (torch.exp(ll) * ll).mean() if ll is not None else -torch.inf
+                        (math.exp(ll) * ll) if ll is not None else -float('inf')
                         for ll in log_probs
                     ]
                 ),
                 dim=0,
             ).numpy()
+        case _:
+            weights = np.ones(len(attempts)) / len(attempts)
 
     # First to full grid majority voting
     subset = _full_grid_majority_vote(attempts=attempts, weights=weights, threshold=threshold)
@@ -76,13 +79,15 @@ def _full_grid_majority_vote(
     threshold: float,
 ) -> List[Grid]:
     mapping = _group_same([_numpy_to_hash(attempt) for attempt in attempts])
-    score = {}
+    score: Dict[str, float] = {}
     for key, indices in mapping.items():
         score[key] = sum(weights[idx] for idx in indices)
     best_key_idx = np.argsort(list(score.values()))[::-1][:2]
     keys = list(score.keys())
     best_keys = [keys[idx] for idx in best_key_idx]
-    subset = [attempts[mapping[key][0]] for key in best_keys if score[key] >= threshold]
+    subset = [
+        attempts[mapping[key][0]] for key in best_keys if score[key] >= threshold
+    ]
     return subset
 
 
@@ -91,31 +96,32 @@ def _pixelwise_majority_vote(
     weights: np.ndarray,
     subset: List[Grid],
 ) -> None:
-    # first select most common shape
-    # then vote per pixel
-    mapping = _group_same([np.asarray(attempt).shape for attempt in attempts])
-    score = {}
+    # First select most common shape
+    # Then vote per pixel
+    shapes = [tuple(np.asarray(attempt).shape) for attempt in attempts]
+    mapping = _group_same(shapes)
+    score: Dict[Tuple[int, int], float] = {}
     for key, indices in mapping.items():
         score[key] = sum(weights[idx] for idx in indices)
     best_key_indices = np.argsort(list(score.values()))[::-1][:2]
     keys = list(score.keys())
-    # NOTE: choose different shapes for attempts, but could do
-    #       logic to only change a few pixels
-    for key_indices in best_key_indices:
-        shape = keys[key_indices]
-        indices = mapping[keys[key_indices]]
+
+    for key_idx in best_key_indices:
+        shape = keys[key_idx]
+        indices = mapping[shape]
         attempts_ = [attempts[idx] for idx in indices]
         pixel_attempt = np.zeros(shape, dtype=np.uint8)
         for idx_0 in range(shape[0]):
             for idx_1 in range(shape[1]):
-                pixel_mapping = _group_same([attempt[idx_0][idx_1] for attempt in attempts_])
-                pixel_score = {}
-                for key, indices in pixel_mapping.items():
-                    pixel_score[key] = sum(weights[idx] for idx in indices)
-                    pixel_best_key_indices = np.argsort(list(pixel_score.values()))[-1]
-                    pixel_keys = list(pixel_score.keys())
-                    best_pixel = pixel_keys[pixel_best_key_indices]
-                    pixel_attempt[idx_0, idx_1] = best_pixel
+                pixel_values = [attempt[idx_0][idx_1] for attempt in attempts_]
+                pixel_mapping = _group_same(pixel_values)
+                pixel_score: Dict[int, float] = {}
+                for pixel_value, idx_list in pixel_mapping.items():
+                    pixel_score[pixel_value] = sum(weights[indices[i]] for i in idx_list)
+                pixel_best_key_idx = np.argmax(list(pixel_score.values()))
+                pixel_keys = list(pixel_score.keys())
+                best_pixel = pixel_keys[pixel_best_key_idx]
+                pixel_attempt[idx_0, idx_1] = best_pixel
         pixel_attempt_ = pixel_attempt.tolist()
         if pixel_attempt_ not in subset:
             subset.append(pixel_attempt_)
@@ -125,95 +131,85 @@ def _pixelwise_majority_vote(
 
 def _filter_attempts_with_constraints(
     attempts: List[Grid],
-    log_probs: List[torch.Tensor],
+    log_probs: List[float],
     task: JSONTask,
     constraints: Dict[str, Any],
-) -> Tuple[List[Grid], List[torch.Tensor]]:
-    if len(constraints) == 0:
+) -> Tuple[List[Grid], List[float]]:
+    if not constraints:
         constraints = get_hard_constraints(task, 0)
-    constraints |= inclusion_logic.build(task["train"])
+    constraints.update(inclusion_logic.build(task["train"]))
     filtered_attempts = []
     filtered_log_probs = []
-    for attempt, log_prob in zip(attempts, log_probs, strict=True):
+    for attempt, log_prob in zip(attempts, log_probs):
         output = np.asarray(attempt)
         colors = set(output.ravel().tolist())
-        # print(constraints)
-        # print(output.shape)
-        # print(colors)
-        if len(constraints["colors"]) > 0 and not colors.issubset(constraints["colors"]):
+
+        if constraints.get("colors") and not colors.issubset(constraints["colors"]):
             continue
 
-        if len(constraints["size"]) > 0 and output.shape not in [
+        if constraints.get("size") and output.shape not in [
             tuple(sublist) for sublist in constraints["size"]
         ]:
             continue
+
         input_ = np.asarray(task["test"][0]["input"])
-        if constraints["input_contains_output"] is True:
-            if _is_subset(subset_array=output, main_array=input_) is False:
+        if constraints.get("input_contains_output"):
+            if not _is_subset(subset_array=output, main_array=input_):
                 continue
         else:
-            if _is_subset(subset_array=output, main_array=input_) is True:
+            if _is_subset(subset_array=output, main_array=input_):
                 continue
-            if constraints["input_contains_output_with_symmetries"] is True:
+            if constraints.get("input_contains_output_with_symmetries"):
                 for transform in RIGID_TRANSFORMS[1:]:
-                    if (
-                        _is_subset(subset_array=np.asarray(transform(output)), main_array=input_)
-                        is True
-                    ):
+                    transformed_output = np.asarray(transform(output))
+                    if _is_subset(subset_array=transformed_output, main_array=input_):
                         break
                 else:
                     continue
             else:
                 is_valid = True
                 for transform in RIGID_TRANSFORMS[1:]:
-                    if (
-                        _is_subset(subset_array=np.asarray(transform(output)), main_array=input_)
-                        is True
-                    ):
+                    transformed_output = np.asarray(transform(output))
+                    if _is_subset(subset_array=transformed_output, main_array=input_):
                         is_valid = False
                         break
-                if is_valid is False:
+                if not is_valid:
                     continue
-        if constraints["output_contains_input"] is True:
-            if _is_subset(subset_array=input_, main_array=output) is False:
+
+        if constraints.get("output_contains_input"):
+            if not _is_subset(subset_array=input_, main_array=output):
                 continue
         else:
-            if _is_subset(subset_array=input_, main_array=output) is True:
+            if _is_subset(subset_array=input_, main_array=output):
                 continue
-            if constraints["output_contains_input_with_symmetries"] is True:
+            if constraints.get("output_contains_input_with_symmetries"):
                 for transform in RIGID_TRANSFORMS:
-                    if (
-                        _is_subset(subset_array=np.asarray(transform(input_)), main_array=output)
-                        is True
-                    ):
+                    transformed_input = np.asarray(transform(input_))
+                    if _is_subset(subset_array=transformed_input, main_array=output):
                         break
                 else:
                     continue
             else:
                 is_valid = True
                 for transform in RIGID_TRANSFORMS:
-                    if (
-                        _is_subset(subset_array=np.asarray(transform(input_)), main_array=output)
-                        is True
-                    ):
+                    transformed_input = np.asarray(transform(input_))
+                    if _is_subset(subset_array=transformed_input, main_array=output):
                         is_valid = False
                         break
-                if is_valid is False:
+                if not is_valid:
                     continue
+
         for indices, color in constraints.get("pixels", {}).items():
             if (
-                len(attempt) < indices[0]
-                and len(attempt[0]) < indices[1]
-                and attempt[indices[0]][indices[1]] != color
+                len(attempt) <= indices[0]
+                or len(attempt[0]) <= indices[1]
+                or attempt[indices[0]][indices[1]] != color
             ):
                 break
         else:
             filtered_attempts.append(attempt)
             filtered_log_probs.append(log_prob)
 
-    # dead code
-    # if len(filtered_attempts) == 0 and False:
-    #     return attempts, log_probs
     return filtered_attempts, filtered_log_probs
 
 
@@ -240,13 +236,12 @@ def _is_subset(subset_array: np.ndarray, main_array: np.ndarray) -> bool:
 
 def _numpy_to_hash(x: Union[NDArray[np.int_], List[List[int]]]) -> str:
     """Convert numpy array to sha1 hash"""
-    return hashlib.sha1(np.ascontiguousarray(x, dtype=np.int8)).hexdigest()  
+    array = np.ascontiguousarray(x, dtype=np.int8)
+    return hashlib.sha1(array.tobytes()).hexdigest()
 
 
 def _group_same(items: List[Any]) -> Dict[Any, List[int]]:
     mapping: Dict[Any, List[int]] = {}
     for i, item in enumerate(items):
-        if item not in mapping:
-            mapping[item] = []
-        mapping[item].append(i)
+        mapping.setdefault(item, []).append(i)
     return mapping

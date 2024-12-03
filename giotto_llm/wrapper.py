@@ -583,7 +583,7 @@ class ModelWrapper:
         n_attempts: int | None,
         task_log_probs: dict[str, list[float]],
         tasks: dict[str, JSONTask],
-        weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]] = None
+        weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]] = None,
         threshold: float= None,
         constraints: dict[str, dict[str, Any]],
     ) -> dict[str, Attempts]:

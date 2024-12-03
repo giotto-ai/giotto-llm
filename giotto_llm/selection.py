@@ -5,8 +5,8 @@ from typing import Any
 import numpy as np
 import torch
 from numpy.typing import NDArray
-from verifier. import inclusion_logic
-from verifier.verifier import get_hard_constraints
+from giotto_llm.verifier. import inclusion_logic
+from giotto_llm.verifier.verifier import get_hard_constraints
 
 from giotto_llm.transforms import RIGID_TRANSFORMS
 from giotto_llm.type_aliases import Grid, JSONTask

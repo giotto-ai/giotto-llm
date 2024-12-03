@@ -1,13 +1,9 @@
 from collections import defaultdict
 from typing import Dict, List, Optional, Set, Tuple
 
-from ..type_aliases import Example, JSONTask, LogicRule
+from ..type_aliases import Example, JSONTask, LogicRule,RatioType,SizeType
 from . import helper_functions
 
-# Define type aliases for clarity
-ReducedRatio = Tuple[int, int]
-RatioType = Tuple[ReducedRatio, ReducedRatio]
-SizeType = Tuple[int, int]
 
 def input_output_have_always_same_size(task: JSONTask) -> bool:
     ratio = size_based_logic(task)["ratio"]
@@ -32,20 +28,18 @@ def size_based_logic(task: JSONTask) -> Dict[str, Optional[LogicRule]]:
     output_sizes: Set[SizeType] = set()
     for example in task["train"]:
         input_grid, output_grid = example["input"], example["output"]
-        ratios.add(helper_functions.grids_ratio(input_grid, output_grid))
+        ratio = helper_functions.grids_ratio(input_grid, output_grid)
+        ratios.add(ratio)
         output_sizes.add(helper_functions.grid_size(output_grid))
     if ratios:
-        # Since ratios is a set of RatioType (Tuple[ReducedRatio, ReducedRatio])
-        # Unpack the set into lists of ReducedRatios
         ratios_xs = [rx for rx, _ in ratios]
         ratios_ys = [ry for _, ry in ratios]
         if len(set(ratios_xs)) == 1 and len(set(ratios_ys)) == 1:
-            res["ratio"] = (ratios_xs[0], ratios_ys[0])  # Now this should be of type RatioType
-
+            res["ratio"] = (ratios_xs[0], ratios_ys[0])  # This is of type RatioType
     if output_sizes:
         output_xs, output_ys = zip(*output_sizes)
         if len(set(output_xs)) == 1 and len(set(output_ys)) == 1:
-            res["fixed_size"] = (output_xs[0], output_ys[0])
+            res["fixed_size"] = (output_xs[0], output_ys[0])  # This is of type SizeType
     return res
 
 def build(examples: List[Example]) -> Dict[str, Optional[LogicRule]]:

@@ -7,7 +7,7 @@ from numpy.typing import NDArray
 
 import numpy as np
 
-from ..type_aliases import ColorList, ColorSet, Grid, JSONTask, Ratio, Size
+from ..type_aliases import ColorList, ColorSet, Grid, JSONTask, Ratio, Size,ReducedRatio, RatioType
 
 FOLDER_PATH = "data/all_800/"
 
@@ -48,7 +48,7 @@ def dict_diff(d1: Dict[Any, int], d2: Dict[Any, int]) -> Dict[Any, int]:
     return {k: d1.get(k, 0) - d2.get(k, 0) for k in set(d1) | set(d2)}
 
 
-def reduced_ratio(x: int, y: int) -> Tuple[int, int]:
+def reduced_ratio(x: int, y: int) -> ReducedRatio:
     if y == 0:
         return (x, 0)
     gcd = math.gcd(x, y)
@@ -115,7 +115,7 @@ def grid_size(grid: Grid) -> Size:
     return len(grid), len(grid[0])
 
 
-def grids_ratio(input_grid: Grid, output_grid: Grid) -> Tuple[Ratio, Ratio]:
+def grids_ratio(input_grid: Grid, output_grid: Grid) -> RatioType:
     input_x, input_y = grid_size(input_grid)
     output_x, output_y = grid_size(output_grid)
     return (

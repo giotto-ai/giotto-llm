@@ -1,13 +1,17 @@
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional, Set, Tuple
 
 from ..type_aliases import Example, JSONTask, LogicRule
 from . import helper_functions
 
+# Define type aliases for clarity
+RatioType = Tuple[Tuple[int, int], Tuple[int, int]]
+SizeType = Tuple[int, int]
 
 def input_output_have_always_same_size(task: JSONTask) -> bool:
-    return size_based_logic(task)["ratio"] == (1, 1)
-
+    ratio = size_based_logic(task)["ratio"]
+    # Ensure ratio is not None and compare with ((1, 1), (1, 1))
+    return ratio == ((1, 1), (1, 1))
 
 def example_logic(example: Example) -> Dict[str, LogicRule]:
     input_grid, output_grid = example["input"], example["output"]
@@ -18,33 +22,34 @@ def example_logic(example: Example) -> Dict[str, LogicRule]:
         "fixed_size": (output_x, output_y),
     }
 
-
-def size_based_logic(task: JSONTask) -> Dict[str, LogicRule]:
-    res = {
-        "ratio": ((-1, -1), (-1, -1)),
-        "fixed_size": (-1, -1),
+def size_based_logic(task: JSONTask) -> Dict[str, Optional[LogicRule]]:
+    res: Dict[str, Optional[LogicRule]] = {
+        "ratio": None,
+        "fixed_size": None,
     }
-    ratios, output_sizes = set(), set()
+    ratios: Set[RatioType] = set()
+    output_sizes: Set[SizeType] = set()
     for example in task["train"]:
         input_grid, output_grid = example["input"], example["output"]
         ratios.add(helper_functions.grids_ratio(input_grid, output_grid))
         output_sizes.add(helper_functions.grid_size(output_grid))
-    ratios_xs, ratios_ys = zip(*ratios)
-    output_xs, output_ys = zip(*output_sizes)
-    if len(ratios_xs) == 1 and len(ratios_ys) == 1:
-        res["ratio"] = (list(ratios_xs)[0], list(ratios_ys)[0])
-    elif len(output_xs) == 1 and len(output_ys) == 1:
-        res["fixed_size"] = (next(iter(output_xs)), next(iter(output_ys)))
+    if ratios:
+        ratios_xs, ratios_ys = zip(*ratios)
+        if len(set(ratios_xs)) == 1 and len(set(ratios_ys)) == 1:
+            res["ratio"] = (ratios_xs[0], ratios_ys[0])
+    if output_sizes:
+        output_xs, output_ys = zip(*output_sizes)
+        if len(set(output_xs)) == 1 and len(set(output_ys)) == 1:
+            res["fixed_size"] = (output_xs[0], output_ys[0])
     return res
 
-
-def build(examples: List[Example]) -> Dict[str, LogicRule]:
-    res = defaultdict(set)
+def build(examples: List[Example]) -> Dict[str, Optional[LogicRule]]:
+    res: Dict[str, Set[LogicRule]] = defaultdict(set)
     for example in examples:
         for k, v in example_logic(example).items():
             res[k].add(v)
-    new_rules = {
-        "ratio": (next(iter(res["ratio"])) if len(res["ratio"]) == 1 else None),
-        "fixed_size": (next(iter(res["fixed_size"])) if len(res["fixed_size"]) == 1 else None),
+    new_rules: Dict[str, Optional[LogicRule]] = {
+        "ratio": next(iter(res["ratio"])) if len(res["ratio"]) == 1 else None,
+        "fixed_size": next(iter(res["fixed_size"])) if len(res["fixed_size"]) == 1 else None,
     }
     return new_rules

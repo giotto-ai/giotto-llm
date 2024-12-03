@@ -1,3 +1,4 @@
+# type: ignore
 import hashlib
 from typing import Any
 

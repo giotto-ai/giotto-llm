@@ -113,17 +113,24 @@ class MolmoWrapper(ModelWrapper):
         self,
         batch_inputs: dict[str, Tensor],
         generation_config: GenerationConfig,
+        constraints: list[dict[str, Any],],
+        constraints_strategy: Literal["no", "token_subset", "valid"] = "valid",
+        constraints_use_verifier_shapes: bool = True,
+        constraints_use_verifier_colors: bool = True,
+        constraints_use_verifier_pixels: bool = True,
     ) -> ModelOutput:
         output: ModelOutput = self.model.generate_from_batch(
             batch_inputs,
             generation_config=generation_config,
             tokenizer=self.tokenizer,
             prefix_allowed_tokens_fn=partial(
-                self.prefix_allowed_tokens_fn,  # type: ignore
+                self.prefix_allowed_tokens_fn,
                 input_size=batch_inputs["input_ids"].shape[1],
+                # batch_constraints=constraints,
             ),
         )
         return output
+
 
     def _conversations_to_batch_inputs(self, conversations: list[OAIMessage]) -> dict[str, Tensor]:
         if len(conversations) > 1:

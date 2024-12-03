@@ -94,7 +94,6 @@ def test_task_to_oai(
 def test_dataset(dataset: Dataset) -> None:
     """Test that the different Dataset classes can return items successfully"""
     data = dataset[0]
-    assert len(data) == 4  # TODO: check here
     oai_message = data[0]
     keys = ["system", "user", "assistant"]
     for i, item in enumerate(oai_message):

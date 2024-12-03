@@ -6,7 +6,7 @@ import os
 import pickle
 from collections import defaultdict
 from functools import partial
-from typing import Any, Literal, Type
+from typing import Any, Literal, Type,Optional
 
 import numpy as np
 import psutil
@@ -586,7 +586,7 @@ class ModelWrapper:
         task_log_probs: dict[str, list[float]],
         tasks: dict[str, JSONTask],
         weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]] = None,
-        threshold: float = None,
+        threshold: float| None = None,
     ) -> dict[str, Attempts]:
         """Sort attempts by log-likelihood, merge and combine test examples from same tasks"""
         results: dict[str, Attempts] = defaultdict(lambda: defaultdict(list))
@@ -605,7 +605,7 @@ class ModelWrapper:
                 attempt_log_likelihoods: dict[str, list[float]] = defaultdict(list)
                 for i, attempt in enumerate(attempts):
                     attempt_log_likelihoods[str(attempt)].append(
-                        task_log_likelihoods[split_task_id][i]
+                        task_log_probs[split_task_id][i]
                     )
 
                 grids = [json.loads(attempt) for attempt in attempt_log_likelihoods.keys()]

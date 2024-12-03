@@ -13,7 +13,7 @@ from giotto_llm.type_aliases import Grid, JSONTask
 
 def select_top_2(
     attempts: List[Grid],
-    log_probs: List[torch.Tensor],
+    log_probs: list[float],
     task: JSONTask,
     weight_method: str,
     threshold: float,

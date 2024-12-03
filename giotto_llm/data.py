@@ -76,7 +76,7 @@ class Dataset(torch.utils.data.Dataset):
             else task_to_oai_causal_lm
         )
         self.constraints_strategy = constraints_strategy
-        self.add_task_id = isinstance(messages_fn, PromptSolveWithIcecuberHints)
+        self.add_task_id = False
 
 
     def __len__(self) -> int:

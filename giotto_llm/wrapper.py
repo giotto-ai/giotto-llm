@@ -23,7 +23,7 @@ from .consts import DATA_CONFIG_FILENAME, GRID_FORMATTER_CONFIG_FILENAME, MAX_GR
 from .data import Dataset
 from .prompts.consts import TYPES_OF_PROMPTS
 from .prompts.grid_formatter import GridFormatter
-from .selection import select_top_2 # type: ignore
+from .selection import select_top_n # type: ignore
 from .transforms import Transforms, _BackTransformTestOutput, backtransform_test_output
 from .type_aliases import Attempts, Grid, JSONTask, OAIMessage
 from .utils import RepeatSampler, write_json

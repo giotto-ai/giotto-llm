@@ -18,14 +18,16 @@ def select_top_n(
     task: JSONTask,
     weight_method: str,
     threshold: float,
-    constraints: dict[str, Any] = {},
     n_attempts:int,
+    constraints: dict[str, Any] = {},
+    
 ):
     """Select the top 2 attempts"""
 
     print(weight_method)
     print(threshold)
     print(n_attempts)
+    print(constraints)
     if len(attempts) < n_attempts:
         return attempts
     attempts, log_probs = _filter_attempts_with_constraints(attempts, log_probs, task, constraints)

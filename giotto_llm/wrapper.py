@@ -615,6 +615,7 @@ class ModelWrapper:
                     idx = idx[:n_attempts]
                 results[task_id][test_idx] = [grids[i] for i in idx]
             else:
+                print('Using ranking and filtering approach..')
                 results[task_id][test_idx] = select_top_2(
                     attempts=task_attempts[split_task_id],
                     log_probs=task_log_probs[split_task_id],

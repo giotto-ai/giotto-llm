@@ -581,9 +581,9 @@ class ModelWrapper:
         self,
         task_attempts: dict[str, list[Grid]],
         constraints: dict[str, dict[str, Any]],
-        n_attempts: int | None,
         task_log_probs: dict[str, list[float]],
         tasks: dict[str, JSONTask],
+        n_attempts: int | None,
         weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]] = None,
         threshold: float| None = None,
     ) -> dict[str, Attempts]:

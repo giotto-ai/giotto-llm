@@ -66,8 +66,8 @@ class EvaluationConfig(BaseModel):
     constraints_use_verifier_colors: bool = True
     constraints_use_verifier_pixels: bool = True
     input_tokens_limit: int | None = None
-    selection_weights_method: Literal["uniform", "ll_sum", "entropy"] = "uniform"
-    selection_threshold: float = 0.0
+    selection_weights_method: Literal["uniform", "ll_sum", "entropy"] = "ll_sum"
+    selection_threshold: float = 0.5
     generation_config: dict[str, Any] = {"max_new_tokens": 1024, "num_return_sequences": 1}
     use_majority_vote: bool = False
 
@@ -616,13 +616,14 @@ class ModelWrapper:
                 results[task_id][test_idx] = [grids[i] for i in idx]
             else:
                 print('Using ranking and filtering approach..')
-                results[task_id][test_idx] = select_top_2(
+                results[task_id][test_idx] = select_top_n(
                     attempts=task_attempts[split_task_id],
                     log_probs=task_log_probs[split_task_id],
                     task=tasks[split_task_id],
                     weight_method=weight_method,
                     threshold=threshold,
                     constraints=constraints[split_task_id],
+                    n_attempts=n_attempts,
                 )
         return results
 

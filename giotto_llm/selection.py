@@ -12,24 +12,24 @@ from giotto_llm.transforms import RIGID_TRANSFORMS
 from giotto_llm.type_aliases import Grid, JSONTask
 
 
-def select_top_2(
+def select_top_n(
     attempts: list[Grid],
     log_probs: list[float],
     task: JSONTask,
     weight_method: str,
     threshold: float,
     constraints: dict[str, Any] = {},
+    n_attempts:int,
 ):
     """Select the top 2 attempts"""
 
-    # -------------------
-    # DO NOT CHANGE
-    threshold = 0.5
-    # ------------------
-    if len(attempts) < 2:
+    print(weight_method)
+    print(threshold)
+    print(n_attempts)
+    if len(attempts) < n_attempts:
         return attempts
     attempts, log_probs = _filter_attempts_with_constraints(attempts, log_probs, task, constraints)
-    if len(attempts) < 2:
+    if len(attempts) < n_attempts:
         return attempts
 
     match weight_method:
@@ -54,16 +54,16 @@ def select_top_2(
     # First to full grid majority voting
     subset = _full_grid_majority_vote(attempts=attempts, weights=weights, threshold=threshold)
     # Then pixelwise
-    if len(subset) < 2:
+    if len(subset) < n_attempts:
         _pixelwise_majority_vote(attempts, weights, subset)
     # Finally sorting by weight
-    if len(subset) < 2:
+    if len(subset) < n_attempts:
         for attempt in [attempts[idx] for idx in np.argsort(weights)[::-1]]:
-            if attempt not in subset and len(subset) < 2:
+            if attempt not in subset and len(subset) < n_attempts:
                 subset.append(attempt)
 
     # Sanity checks (TODO remove)
-    assert len(subset) <= 2
+    assert len(subset) <= n_attempts
     for i in range(len(subset)):
         for j in range(i + 1, len(subset)):
             assert subset[i] != subset[j]

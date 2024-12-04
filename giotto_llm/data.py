@@ -10,7 +10,7 @@ import polars as pl
 import torch
 from PIL import Image
 
-from giotto_llm.verifier.verifier import get_hard_constraints
+from .verifier.verifier import get_hard_constraints
 
 from .consts import DEFAULT_ATTEMPT
 from .prompts.consts import TYPES_OF_PROMPTS

@@ -76,10 +76,7 @@ class Verifier:
             and test_logic["fixed_colors"] != self.logic["fixed_colors"]
         ):
             wrong.append("fixed_colors")
-        if (
-            self.logic.get("new_colors")
-            and test_logic["new_colors"] != self.logic["new_colors"]
-        ):
+        if self.logic.get("new_colors") and test_logic["new_colors"] != self.logic["new_colors"]:
             wrong.append("new_colors")
         if (
             self.logic.get("dropped_colors")

@@ -30,17 +30,11 @@ from giotto_llm.wrapper import EvaluationConfig
 CONFIG = {
     "wrapper": CausalLMWrapper,
     "wrapper_kwargs": {
-        "model_id": "",
         "quantization": "no",
     },
     "evaluation_config": {
-        "batch_size": 1,
-        "n_attempts": 2,
-        "n_transforms": 4,
         "generation_config": {
             "max_new_tokens": 1024,
-            "num_return_sequences": 1,
-            "num_beams": 1,
         },
     },
 }
@@ -434,6 +428,9 @@ def main(
             model_config["evaluation_config"]["batch_size"] = config.eval_batch_size  # type: ignore
             model_config["evaluation_config"]["n_attempts"] = config.eval_n_attempts  # type: ignore
             model_config["evaluation_config"]["n_transforms"] = config.eval_n_transforms  # type: ignore
+            model_config["evaluation_config"]["constraints_strategy"] = config.eval_constraints_strategy  # type: ignore
+            model_config["evaluation_config"]["selection_weights_method"] = config.eval_selection_weights_method  # type: ignore
+            model_config["evaluation_config"]["selection_threshold"] = config.eval_selection_threshold  # type: ignore
             model_config["evaluation_config"]["generation_config"][  # type: ignore
                 "num_return_sequences"
             ] = config.eval_num_return_sequences
@@ -508,6 +505,9 @@ if __name__ == "__main__":
         eval_n_transforms=args["eval_n_transforms"],
         eval_num_return_sequences=args["eval_num_return_sequences"],
         eval_num_beams=args["eval_num_beams"],
+        eval_selection_threshold=args["eval_selection_threshold"],
+        eval_selection_weights_method=args["eval_selection_weights_method"],
+        eval_constraints_strategy=args["eval_constraints_strategy"],
         gradient_accumulation_steps=args["gradient_accumulation_steps"],
         num_train_epochs=args["num_train_epochs"],
         neftune_noise_alpha=args["neftune_noise_alpha"],

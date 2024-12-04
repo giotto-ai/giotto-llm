@@ -5,11 +5,11 @@ from typing import Any
 import numpy as np
 import torch
 from numpy.typing import NDArray
-from giotto_llm.verifier import inclusion_logic
-from giotto_llm.verifier.verifier import get_hard_constraints
 
 from giotto_llm.transforms import RIGID_TRANSFORMS
 from giotto_llm.type_aliases import Grid, JSONTask
+from giotto_llm.verifier import inclusion_logic
+from giotto_llm.verifier.verifier import get_hard_constraints
 
 
 def select_top_n(
@@ -18,16 +18,10 @@ def select_top_n(
     task: JSONTask,
     weight_method: str,
     threshold: float,
-    n_attempts:int,
+    n_attempts: int,
     constraints: dict[str, Any] = {},
-    
 ):
     """Select the top 2 attempts"""
-
-    print(weight_method)
-    print(threshold)
-    print(n_attempts)
-    print(constraints)
     if len(attempts) < n_attempts:
         return attempts
     attempts, log_probs = _filter_attempts_with_constraints(attempts, log_probs, task, constraints)

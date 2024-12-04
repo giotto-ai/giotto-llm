@@ -3,11 +3,11 @@ import math
 import os
 from collections import Counter
 from typing import Any, Dict, List, Set, Tuple, Union, cast
-from numpy.typing import NDArray
 
 import numpy as np
+from numpy.typing import NDArray
 
-from ..type_aliases import ColorList, ColorSet, Grid, JSONTask, Ratio, Size,ReducedRatio, RatioType
+from ..type_aliases import ColorList, ColorSet, Grid, JSONTask, Ratio, RatioType, ReducedRatio, Size
 
 FOLDER_PATH = "data/all_800/"
 
@@ -78,9 +78,7 @@ def get_color_diff(input_grid: Grid, output_grid: Grid) -> Dict[int, int]:
     return dict_diff(input_color_count, output_color_count)
 
 
-def get_color_ratio(
-    input_grid: Grid, output_grid: Grid
-) -> Dict[int, Tuple[int, int]]:
+def get_color_ratio(input_grid: Grid, output_grid: Grid) -> Dict[int, Tuple[int, int]]:
     input_color_count = get_all_colors_counter(input_grid)
     output_color_count = get_all_colors_counter(output_grid)
     return dict_ratio(input_color_count, output_color_count)

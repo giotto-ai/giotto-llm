@@ -302,6 +302,20 @@ def assemble_commmand_from_arguments(
         str(arguments["lora_r"]),
         "--save_total_limit",
         str(arguments["save_total_limit"]),
+        "--eval_constraints_strategy",
+        str(int(arguments["eval_constraints_strategy"])),
+        "--eval_selection_threshold",
+        str(int(arguments["eval_selection_threshold"])),
+        "--eval_selection_weights_method",
+        str(arguments["eval_selection_weights_method"]),
+        "--eval_n_attempts",
+        str(int(arguments["eval_n_attempts"])),
+        "--eval_num_return_sequences",
+        str(int(arguments["eval_num_return_sequences"])),
+        "--eval_n_transforms",
+        str(int(arguments["eval_n_transforms"])),
+        "--eval_num_beams",
+        str(int(arguments["eval_num_beams"])),
     ]
 
     if arguments["kaggle_mode"]:

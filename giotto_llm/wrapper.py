@@ -6,7 +6,7 @@ import os
 import pickle
 from collections import defaultdict
 from functools import partial
-from typing import Any, Literal, Type,Optional
+from typing import Any, Literal, Optional, Type
 
 import numpy as np
 import psutil
@@ -23,7 +23,7 @@ from .consts import DATA_CONFIG_FILENAME, GRID_FORMATTER_CONFIG_FILENAME, MAX_GR
 from .data import Dataset
 from .prompts.consts import TYPES_OF_PROMPTS
 from .prompts.grid_formatter import GridFormatter
-from .selection import select_top_n # type: ignore
+from .selection import select_top_n  # type: ignore
 from .transforms import Transforms, _BackTransformTestOutput, backtransform_test_output
 from .type_aliases import Attempts, Grid, JSONTask, OAIMessage
 from .utils import RepeatSampler, write_json
@@ -299,6 +299,7 @@ class ModelWrapper:
             weight_method=config.selection_weights_method,
             threshold=config.selection_threshold,
             constraints=task_constraints,
+            constraints_strategy=config.constraints_strategy,
         )
 
         return results
@@ -584,8 +585,9 @@ class ModelWrapper:
         task_log_probs: dict[str, list[float]],
         tasks: dict[str, JSONTask],
         n_attempts: int | None,
-        weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]] = None,
-        threshold: float| None = None,
+        weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]],
+        threshold: float,
+        constraints_strategy: Literal["no", "token_subset", "valid"],
     ) -> dict[str, Attempts]:
         """Sort attempts by log-likelihood, merge and combine test examples from same tasks"""
         results: dict[str, Attempts] = defaultdict(lambda: defaultdict(list))
@@ -598,24 +600,8 @@ class ModelWrapper:
                 task_id = split_task_id
                 test_idx = 0
 
-            if weight_method is None or threshold is None:
-                attempts = task_attempts[split_task_id]
-                # There can be duplicate attempts, so mean the log likelihood of duplicates
-                attempt_log_likelihoods: dict[str, list[float]] = defaultdict(list)
-                for i, attempt in enumerate(attempts):
-                    attempt_log_likelihoods[str(attempt)].append(
-                        task_log_probs[split_task_id][i]
-                    )
-
-                grids = [json.loads(attempt) for attempt in attempt_log_likelihoods.keys()]
-                log_likelihoods = [np.mean(ll) for ll in attempt_log_likelihoods.values()]
-
-                idx = np.argsort(log_likelihoods)[::-1]
-                if n_attempts is not None:
-                    idx = idx[:n_attempts]
-                results[task_id][test_idx] = [grids[i] for i in idx]
-            else:
-                print('Using ranking and filtering approach..')
+            if constraints_strategy == "valid":
+                print("Using ranking and filtering approach..")
                 results[task_id][test_idx] = select_top_n(
                     attempts=task_attempts[split_task_id],
                     log_probs=task_log_probs[split_task_id],
@@ -625,6 +611,21 @@ class ModelWrapper:
                     constraints=constraints[split_task_id],
                     n_attempts=n_attempts,
                 )
+
+            else:
+                attempts = task_attempts[split_task_id]
+                # There can be duplicate attempts, so mean the log likelihood of duplicates
+                attempt_log_likelihoods: dict[str, list[float]] = defaultdict(list)
+                for i, attempt in enumerate(attempts):
+                    attempt_log_likelihoods[str(attempt)].append(task_log_probs[split_task_id][i])
+
+                grids = [json.loads(attempt) for attempt in attempt_log_likelihoods.keys()]
+                log_likelihoods = [np.mean(ll) for ll in attempt_log_likelihoods.values()]
+
+                idx = np.argsort(log_likelihoods)[::-1]
+                if n_attempts is not None:
+                    idx = idx[:n_attempts]
+                results[task_id][test_idx] = [grids[i] for i in idx]
         return results
 
     def _decode(self, output_ids: Tensor, input_size: int) -> list[str]:

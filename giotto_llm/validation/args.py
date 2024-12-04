@@ -38,7 +38,6 @@ def parse_arguments() -> EasyDict:
         help="One of [training, evaluation, test, full]",
     )
 
-
     parser.add_argument(
         "--batch_size",
         type=int,

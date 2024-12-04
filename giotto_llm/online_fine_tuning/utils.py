@@ -67,6 +67,9 @@ class OnlineFinetuningConfig(BaseModel):
     eval_n_transforms: int = 4
     eval_num_return_sequences: int = 1
     eval_num_beams: int = 1
+    eval_selection_threshold: float = 0.5
+    eval_selection_weights_method: str = "ll_sum"
+    eval_constraints_strategy: str = "valid"
     gradient_accumulation_steps: int = 4
     num_train_epochs: int = 5
     neftune_noise_alpha: float | None = None

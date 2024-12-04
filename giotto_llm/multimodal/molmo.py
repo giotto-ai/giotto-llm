@@ -131,7 +131,6 @@ class MolmoWrapper(ModelWrapper):
         )
         return output
 
-
     def _conversations_to_batch_inputs(self, conversations: list[OAIMessage]) -> dict[str, Tensor]:
         if len(conversations) > 1:
             raise RuntimeError("Molmo models only works with batch size of 1.")

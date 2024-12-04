@@ -10,6 +10,8 @@ import polars as pl
 import torch
 from PIL import Image
 
+from giotto_llm.verifier.verifier import get_hard_constraints
+
 from .consts import DEFAULT_ATTEMPT
 from .prompts.consts import TYPES_OF_PROMPTS
 from .prompts.grid_formatter import GridFormatter
@@ -17,7 +19,6 @@ from .prompts.text_prompts import PromptSolveShort, TextPromptBase
 from .transforms import Transforms, _BackTransformTestOutput, transform_task
 from .type_aliases import JSONTask, OAIMessage
 from .utils import split_tasks_by_test
-from giotto_llm.verifier.verifier import get_hard_constraints
 
 # Keep "mixed colors" last so they are used less often
 # They are selected to maximize the dot product to the
@@ -77,7 +78,6 @@ class Dataset(torch.utils.data.Dataset):
         )
         self.constraints_strategy = constraints_strategy
         self.add_task_id = False
-
 
     def __len__(self) -> int:
         """The size of the dataset."""

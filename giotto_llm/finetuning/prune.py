@@ -53,7 +53,7 @@ def prune_model(config: dict[str, str | float]) -> None:
     print("loading data")
     dataset = get_dataset(model_type=wrapper.model_type, grid_formatter=wrapper.grid_formatter)
 
-    batch = wrapper.collate_fn_train([dataset[0]])  
+    batch = wrapper.collate_fn_train([dataset[0]])
     example_inputs = [batch["input_ids"], batch["attention_mask"]]
 
     ## 2. Initialize a pruner with the model and the importance criterion

@@ -150,6 +150,26 @@ def parse_arguments_main() -> EasyDict:
         type=int,
         default=1,
     )
+    parser.add_argument(
+        "--eval_constraints_strategy",
+        type=str,
+        default="valid",
+    )
+
+    parser.add_argument(
+        "--eval_selection_weights_method",
+        type=str,
+        choices=("uniform", "ll_sum", "entropy"),
+        default="ll_sum",
+        help="The method used to weigh each attempt during selection",
+    )
+
+    parser.add_argument(
+        "--eval_selection_threshold",
+        type=float,
+        default=0.5,
+        help="The score threshold in [0, 1] to switch between voting strategies",
+    )
 
     parser.add_argument(
         "--gradient_accumulation_steps",
@@ -300,6 +320,9 @@ def parse_arguments_main() -> EasyDict:
             "learning_rate": arguments.learning_rate,
             "batch_size": arguments.batch_size,
             "eval_batch_size": arguments.eval_batch_size,
+            "eval_constraints_strategy": arguments.eval_constraints_strategy,
+            "eval_selection_weights_method": arguments.eval_selection_weights_method,
+            "eval_selection_threshold": arguments.eval_selection_threshold,
             "eval_n_attempts": arguments.eval_n_attempts,
             "eval_n_transforms": arguments.eval_n_transforms,
             "eval_num_return_sequences": arguments.eval_num_return_sequences,

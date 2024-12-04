@@ -1,4 +1,4 @@
-from typing import Any, Literal, TypeAlias, Union, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Literal, Set, Tuple, TypeAlias, Union
 
 Grid: TypeAlias = list[list[int]]
 InputOutputPair: TypeAlias = dict[str, Grid]

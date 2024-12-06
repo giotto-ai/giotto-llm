@@ -79,10 +79,11 @@ class GridFormatter:
             self.color_separator_token,
         ]
 
+        vocab_dict = tokenizer.get_vocab()
         for token in grid_formatting_tokens:
-            if token not in tokenizer.vocab:
-                if token != "":
-                    additional_special_tokens.append(token)
+            if token != "" and token not in vocab_dict:
+                additional_special_tokens.append(token)
+
 
         return additional_special_tokens
 

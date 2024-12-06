@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "model": {
+    "type": "WordLevel",
+    "vocab": {
+      "<pad>": 0,
+      "<eos>": 1,
+      "<|start_example|>": 2,
+      "<|end_example|>": 3,
+      "<|start_input|>": 4,
+      "<|end_input|>": 5,
+      "<|start_output|>": 6,
+      "<|end_output|>": 7,
+      "<|start_row|>": 8,
+      "<|end_row|>": 9,
+      "<|color_0|>": 10,
+      "<|color_1|>": 11,
+      "<|color_2|>": 12,
+      "<|color_3|>": 13,
+      "<|color_4|>": 14,
+      "<|color_5|>": 15,
+      "<|color_6|>": 16,
+      "<|color_7|>": 17,
+      "<|color_8|>": 18,
+      "<|color_9|>": 19
+    },
+    "unk_token": null
+  }
+}
+

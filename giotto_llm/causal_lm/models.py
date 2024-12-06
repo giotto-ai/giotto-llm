@@ -12,6 +12,10 @@ from ..transforms import _BackTransformTestOutput
 from ..type_aliases import JSONTask, OAIMessage
 from ..utils import BNBConfig, is_launched_with_torchrun
 from ..wrapper import ModelWrapper
+from transformers import PreTrainedTokenizerFast
+
+
+self.model.resize_token_embeddings(len(self.tokenizer))
 
 
 class CausalLMWrapper(ModelWrapper):
@@ -67,10 +71,17 @@ class CausalLMWrapper(ModelWrapper):
             model_id,
             **config,
         )
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_id,
-            trust_remote_code=True,
-        )
+        # Load your custom minimal tokenizer instead of AutoTokenizer:
+        self.tokenizer = PreTrainedTokenizerFast(tokenizer_file="minimal_tokenizer.json")
+
+        # Define pad and eos tokens if they aren't auto-detected:
+        self.tokenizer.pad_token = "<pad>"
+        self.tokenizer.eos_token = "<eos>"
+
+        # After setting the tokenizer, resize model embeddings to match the smaller vocab:
+        self.model.resize_token_embeddings(len(self.tokenizer))
+
+
 
         if self.tokenizer.pad_token is None or self.tokenizer.pad_token == self.tokenizer.eos_token:
             # Handle special cases here instead of subclassing for 1 line

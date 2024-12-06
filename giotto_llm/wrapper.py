@@ -7,7 +7,7 @@ import pickle
 from collections import defaultdict
 from functools import partial
 from typing import Any, Literal, Optional, Type
-
+from transformers import PreTrainedTokenizerFast
 import numpy as np
 import psutil
 import torch
@@ -443,22 +443,22 @@ class ModelWrapper:
 
     def _set_output_token_ids(self) -> None:
         self.output_token_ids: dict[str | int, int] = {
-            "start_output": self.tokenizer.vocab[self.grid_formatter.sO_token],
-            "end_output": self.tokenizer.vocab[self.grid_formatter.eO_token],
-            "start_row": self.tokenizer.vocab[self.grid_formatter.sR_token],
-            "end_row": self.tokenizer.vocab[self.grid_formatter.eR_token],
-            "eos": self.tokenizer.eos_token_id,
-            # "eot": 128001,
-            0: self.tokenizer.vocab[self.grid_formatter.c0],
-            1: self.tokenizer.vocab[self.grid_formatter.c1],
-            2: self.tokenizer.vocab[self.grid_formatter.c2],
-            3: self.tokenizer.vocab[self.grid_formatter.c3],
-            4: self.tokenizer.vocab[self.grid_formatter.c4],
-            5: self.tokenizer.vocab[self.grid_formatter.c5],
-            6: self.tokenizer.vocab[self.grid_formatter.c6],
-            7: self.tokenizer.vocab[self.grid_formatter.c7],
-            8: self.tokenizer.vocab[self.grid_formatter.c8],
-            9: self.tokenizer.vocab[self.grid_formatter.c9],
+            "start_output": self.tokenizer.convert_tokens_to_ids(self.grid_formatter.sO_token),
+"end_output": self.tokenizer.convert_tokens_to_ids(self.grid_formatter.eO_token),
+"start_row": self.tokenizer.convert_tokens_to_ids(self.grid_formatter.sR_token),
+"end_row": self.tokenizer.convert_tokens_to_ids(self.grid_formatter.eR_token),
+"eos": self.tokenizer.eos_token_id,
+0: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c0),
+1: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c1),
+2: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c2),
+3: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c3),
+4: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c4),
+5: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c5),
+6: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c6),
+7: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c7),
+8: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c8),
+9: self.tokenizer.convert_tokens_to_ids(self.grid_formatter.c9),
+
         }
 
     def prefix_allowed_tokens_fn(
@@ -474,7 +474,7 @@ class ModelWrapper:
     ) -> list[int]:
         """Restrict the allowed tokens to generate"""
         if strategy == "no":
-            return list(self.tokenizer.vocab.values())
+            return list(range(len(self.tokenizer)))
         if strategy == "token_subset":
             return list(self.output_token_ids.values())
         assert strategy == "valid"

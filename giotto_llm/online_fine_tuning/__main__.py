@@ -43,6 +43,12 @@ BASE_CONFIG = {
             "num_return_sequences": 1,
             "num_beams": 1,
         },
+        "dfs_sampling": True,
+        "dfs_config": {
+            "max_new_tokens": 1024,
+            "threshold": 0.1,
+            "batch_size": 6,
+        }
     },
 }
 

@@ -76,6 +76,7 @@ class CausalLMWrapper(ModelWrapper):
         tokenizer_path = os.path.join(current_directory, "minimal_tokenizer.json")
 
         # Initialize the tokenizer with the constructed path
+        print('start self.tokenizer')
         self.tokenizer = PreTrainedTokenizerFast(tokenizer_file=tokenizer_path)
         print('passed self.tokenizer')
 

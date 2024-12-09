@@ -15,9 +15,6 @@ from ..wrapper import ModelWrapper
 from transformers import PreTrainedTokenizerFast
 
 
-self.model.resize_token_embeddings(len(self.tokenizer))
-
-
 class CausalLMWrapper(ModelWrapper):
     """Wrapper for CausalLM models."""
 

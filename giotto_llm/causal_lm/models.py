@@ -69,12 +69,14 @@ class CausalLMWrapper(ModelWrapper):
             **config,
         )
         # Load your custom minimal tokenizer instead of AutoTokenizer:
-        import os
+        # Get the directory of the current script
+        current_directory = os.path.dirname(os.path.abspath(__file__))
 
-        # Get the full path of the current script
-        current_file_path = os.path.abspath(__file__)
-        print(f"Current file path: {current_file_path}")
-        self.tokenizer = PreTrainedTokenizerFast(tokenizer_file="minimal_tokenizer.json")
+        # Construct the full path to the minimal_tokenizer.json file
+        tokenizer_path = os.path.join(current_directory, "minimal_tokenizer.json")
+
+        # Initialize the tokenizer with the constructed path
+        self.tokenizer = PreTrainedTokenizerFast(tokenizer_file=tokenizer_path)
 
         # Define pad and eos tokens if they aren't auto-detected:
         self.tokenizer.pad_token = "<pad>"

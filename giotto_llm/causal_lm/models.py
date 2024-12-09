@@ -85,7 +85,7 @@ class CausalLMWrapper(ModelWrapper):
 
         # After setting the tokenizer, resize model embeddings to match the smaller vocab:
         self.model.resize_token_embeddings(len(self.tokenizer))
-         print('passed resize_token_embeddings')
+        print('passed resize_token_embeddings')
 
 
         if self.tokenizer.pad_token is None or self.tokenizer.pad_token == self.tokenizer.eos_token:

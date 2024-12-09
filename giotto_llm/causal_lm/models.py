@@ -77,6 +77,7 @@ class CausalLMWrapper(ModelWrapper):
 
         # Initialize the tokenizer with the constructed path
         self.tokenizer = PreTrainedTokenizerFast(tokenizer_file=tokenizer_path)
+        print('passed self.tokenizer')
 
         # Define pad and eos tokens if they aren't auto-detected:
         self.tokenizer.pad_token = "<pad>"
@@ -84,7 +85,7 @@ class CausalLMWrapper(ModelWrapper):
 
         # After setting the tokenizer, resize model embeddings to match the smaller vocab:
         self.model.resize_token_embeddings(len(self.tokenizer))
-
+         print('passed resize_token_embeddings')
 
 
         if self.tokenizer.pad_token is None or self.tokenizer.pad_token == self.tokenizer.eos_token:

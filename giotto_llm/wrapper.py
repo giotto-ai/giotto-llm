@@ -26,7 +26,7 @@ from .prompts.consts import TYPES_OF_PROMPTS
 from .prompts.grid_formatter import GridFormatter
 from .transforms import Transforms, _BackTransformTestOutput, backtransform_test_output
 from .type_aliases import Attempts, Grid, JSONTask, OAIMessage
-from .utils import RepeatSampler, write_json
+from .utils import RepeatSampler, write_json, split_tasks_by_test
 
 
 class EvaluationConfig(BaseModel):
@@ -54,6 +54,7 @@ class EvaluationConfig(BaseModel):
     generation_config: dict[str, Any] = {"max_new_tokens": 1024, "num_return_sequences": 1}
     dfs_sampling: bool = False
     dfs_config: dict[str, Any] = {"max_new_tokens": 1024, "threshold": 0.1, "batch_size": 6}
+    selection_with_augmentation: bool = False
 
     class Config:
         protected_namespaces = ()
@@ -163,18 +164,19 @@ class ModelWrapper:
             )
         prompt_type = self.data_config["prompt_type"]
         assert isinstance(prompt_type, str)
-        messages_fn = TYPES_OF_PROMPTS[prompt_type](grid_formatter=self.grid_formatter)
-        task_grids: dict[str, list[Grid]] = defaultdict(list)
+        self.messages_fn = TYPES_OF_PROMPTS[prompt_type](grid_formatter=self.grid_formatter)
+        task_attempts: dict[str, list[Grid]] = defaultdict(list)
         task_log_likelihoods: dict[str, list[float]] = defaultdict(list)
         dataset = Dataset(
             tasks=tasks,
-            messages_fn=messages_fn,
+            messages_fn=self.messages_fn,
             model_type=self.model_type,
             transforms=transforms,
             image_resize_factor=config.image_resize_factor,
             rigid_transforms_all=config.rigid_transforms_all
         )
         print(f"RIGID_TRANSFORMS_ALL: {config.rigid_transforms_all},  DATASET LENGTH: {len(dataset)}")
+        self.num_dataloader_workers = config.n_dataloader_workers
         dataloader = DataLoader(
             dataset,
             batch_size=config.batch_size,
@@ -211,7 +213,10 @@ class ModelWrapper:
                     backtransforms = [backtransforms[i] for i in range(batch_size) for _ in range(len(responses[i]))]
                     responses = [response for i in range(batch_size) for response in responses[i]]
                     log_likelihoods = torch.tensor([log_likelihood for i in range(batch_size) for log_likelihood in log_likelihoods[i]])
-
+                    
+                    if len(responses) == 0:
+                        raise ValueError("DFS Sampling pruned all sequences.")
+                    
                     logger.info(f"DFS Sampling completed. Number of responses: {len(responses)}")
                     logger.info("EXAMPLE OF RESPONSES and LOG LIKELIHOODS")
                     logger.info(log_likelihoods[0])
@@ -225,8 +230,6 @@ class ModelWrapper:
                     responses = []
 
             if  not responses:
-                if config.dfs_sampling:
-                    logger.info("DFS Sampling pruned all sequences. Running Greed Search.")
                 for key in batch_inputs:
                     batch_inputs[key] = batch_inputs[key].to(device=self.model.device)
                 output = self._generate(batch_inputs, generation_config)
@@ -265,7 +268,7 @@ class ModelWrapper:
                     attempts=attempts,
                     backtransforms=backtransforms,
                     input_size=input_size,
-                )
+                )     
 
             for attempt, log_likelihood, idx, backtransform in zip(
                 attempts, log_likelihoods, batch_indices, backtransforms, strict=True
@@ -275,13 +278,22 @@ class ModelWrapper:
                 task_id = dataset.keys[idx]
                 if config.rigid_transforms_all:
                     task_id = task_id.split("@")[0]
-                task_grids[task_id].append(
+                task_attempts[task_id].append(
                     backtransform_test_output(grid=attempt, backtransform=backtransform)
                 )
                 task_log_likelihoods[task_id].append(log_likelihood.item())
+        
+        if config.selection_with_augmentation: 
+            logger.info("Running selection with augmentation")
+            task_attempts, task_log_likelihoods = self._compute_scores_with_augmentation(
+                tasks=tasks,
+                task_attempts=task_attempts,
+                n_attempts=config.n_attempts,
+                logger=logger,
+            )
 
         results: dict[str, Attempts] = self._create_results(
-            task_attempts=task_grids,
+            task_attempts=task_attempts,
             task_log_likelihoods=task_log_likelihoods,
             n_attempts=config.n_attempts,
         )
@@ -652,7 +664,7 @@ class ModelWrapper:
     def batched_bfs_sampling(
         self,
         batch_input_ids: torch.Tensor,
-        attention_mask: torch.Tensor,
+        attention_masks: torch.Tensor,
         dfs_config: dict,
         logger: logging.Logger
     ) -> tuple[list[list[str]], list[list[float]]]:
@@ -693,7 +705,7 @@ class ModelWrapper:
             
             for batch_start in range(0, len(current_sequences), batch_size):
                 input_ids_batch = current_input_ids[batch_start:batch_start+batch_size]
-                attention_mask_batch = attention_mask[[batch_idx for (_, _, batch_idx) in current_sequences[batch_start:batch_start+batch_size]]]
+                attention_mask_batch = attention_masks[[batch_idx for (_, _, batch_idx) in current_sequences[batch_start:batch_start+batch_size]]]
                 caches_batch = current_caches[batch_start:batch_start+batch_size] if current_caches else None
 
                 input_ids_batch = torch.tensor(input_ids_batch, dtype=torch.long, device=self.model.device)
@@ -771,6 +783,108 @@ class ModelWrapper:
             sequences[batch_idx].append(self.tokenizer.decode(seq[prompt_lengths[batch_idx]:], skip_special_tokens=False))
 
         return sequences, scores
+    
+    @torch.no_grad()
+    def _compute_scores_with_augmentation(           
+        self,
+        tasks: dict[str, JSONTask],
+        task_attempts: dict[str, list[Grid]],
+        n_attempts: int | None,
+        logger: logging.Logger,
+    ) -> tuple[dict[str, list[Grid]], dict[str, list[float]]]:
+        splited_tasks = split_tasks_by_test(tasks)
+        scores = defaultdict(list)
+        for task_id in list(task_attempts.keys()):
+            unique_attempts = set([str(attempt) for attempt in task_attempts[task_id]])
+            task_attempts[task_id] = [json.loads(attempt) for attempt in unique_attempts]
+            if n_attempts is not None and len(task_attempts[task_id]) <= n_attempts:
+                logger.info(f"Task {task_id} has less than {n_attempts} unique attempts. Skipping selection with augmentation.")
+                scores[task_id] = [0.0] * len(task_attempts[task_id])
+                continue
+            for attempt in task_attempts[task_id]:
+                input_attempt = copy.deepcopy(splited_tasks[task_id])
+                input_attempt["test"][0]["output"] = attempt
+                scores[task_id].append(self._compute_log_likelihoods(input_attempt, logger))
+        return task_attempts, scores
+    
+    @torch.no_grad()
+    def _compute_log_likelihoods(self, task: JSONTask, logger: logging.Logger, aggregation="sum",) ->  list[float]:
+        # BASELINE: Only 8 rigid transformations
+        transforms = Transforms(
+            test=False,
+            order=None,
+            color=None,
+            limit_colors=False,
+            rigid=False,
+        )
+        
+        dataset = Dataset(
+            tasks={"task": task},
+            messages_fn=self.messages_fn,
+            model_type=self.model_type,
+            transforms=transforms,
+            image_resize_factor=0, # for vision model set properly
+            rigid_transforms_all=True
+        )
+    
+        dataloader = DataLoader(
+            dataset,
+            batch_size=1,
+            shuffle=False,
+            num_workers=self.num_dataloader_workers,
+            collate_fn=self.collate_fn_train,
+            pin_memory=True,
+            drop_last=False,
+        )
+        scores = []    
+
+        for i, batch in enumerate(dataloader):
+            # HERE VERY EASY TO ADD CACHING. ALL THE INPUT PROMPTS ARE THE SAME
+            # RUN THE MODEL ON INPUT PROMPT ONCE AND THEN USE CACHE FOR ALL THE ATTEMPTS. BUT FOR NOW IMPLEMENTED BRUTE FORCE
+            for key in batch:
+                batch[key] = batch[key].to(device=self.model.device)     
+            logits = self.model(**batch).logits.detach()
+            log_likelihoods = self._get_log_likelihoods_from_logits(logits, batch["labels"].detach())
+            scores.extend(log_likelihoods.tolist())
+            for key in batch:
+                batch[key] = batch[key].detach().cpu()
+            gc.collect()
+            torch.cuda.synchronize()
+            torch.cuda.empty_cache()
+
+        if aggregation == "sum":
+            return sum(scores)
+        elif aggregation == "mean":
+            return sum(scores) / len(scores)
+        else:
+            return scores
+
+    
+    def _get_log_likelihoods_from_logits(self, logits: Tensor, labels: Tensor) -> Tensor:
+        # Compute log probabilities
+        log_probs = torch.log_softmax(logits, dim=-1)
+
+        # Shift labels by one position to align with logits
+        shifted_labels = labels[:, 1:]  # Skip the first token in labels, because it is the start token
+        valid_token_mask = (shifted_labels != -100).long()
+
+        # Replace -100 in shifted_labels with 0 for use with gather
+        shifted_labels_for_gather = shifted_labels.clone()
+        shifted_labels_for_gather[shifted_labels_for_gather == -100] = 0  # Replace -100 with a dummy value
+
+        # Remove last logits to align with shifted_labels
+        log_probs = log_probs[:, :-1, :] 
+
+        # Select log probabilities for the label tokens
+        log_likelihoods = log_probs.gather(2, shifted_labels_for_gather.unsqueeze(-1)).squeeze(-1)
+
+        # Apply the mask to zero out log likelihoods for ignored tokens
+        masked_log_likelihoods = log_likelihoods * valid_token_mask
+
+        # Compute total log likelihood (sum across all tokens in the sequence)
+        total_log_likelihood = masked_log_likelihoods.sum(dim=-1)
+
+        return total_log_likelihood
 
 
     def _set_output_token_ids(self) -> None:

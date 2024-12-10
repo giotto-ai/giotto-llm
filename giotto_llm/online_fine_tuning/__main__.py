@@ -48,7 +48,8 @@ BASE_CONFIG = {
             "max_new_tokens": 1024,
             "threshold": 0.1,
             "batch_size": 6,
-        }
+        },
+        "selection_with_augmentation": True,
     },
 }
 

@@ -69,6 +69,10 @@ class CausalLMWrapper(ModelWrapper):
             **config,
         )
         # Load your custom minimal tokenizer instead of AutoTokenizer:
+        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        print(tokenizer.chat_template)
+
+
         # Get the directory of the current script
         current_directory = os.path.dirname(os.path.abspath(__file__))
 

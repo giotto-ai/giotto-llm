@@ -124,6 +124,7 @@ class CausalLMWrapper(ModelWrapper):
             truncation=False,
             split_special_tokens=False,
             return_tensors="pt",
+            return_token_type_ids=False, 
         )
         transformed_tasks = [example[1] for example in examples]
         constraints = [example[2] for example in examples]
@@ -161,6 +162,8 @@ class CausalLMWrapper(ModelWrapper):
             truncation=False,
             split_special_tokens=False,
             return_tensors="pt",
+            return_token_type_ids=False, 
+
         )
         batch["labels"] = self._create_labels(batch["input_ids"], mask_inputs=mask_inputs)
         return batch

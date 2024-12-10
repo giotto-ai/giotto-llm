@@ -69,8 +69,7 @@ class CausalLMWrapper(ModelWrapper):
             **config,
         )
         # Load your custom minimal tokenizer instead of AutoTokenizer:
-        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
-        print(tokenizer.chat_template)
+        original_tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
 
 
         # Get the directory of the current script
@@ -88,12 +87,7 @@ class CausalLMWrapper(ModelWrapper):
 
         # After setting the tokenizer, resize model embeddings to match the smaller vocab:
         self.model.resize_token_embeddings(len(self.tokenizer))
-        chat_template = {
-        "system": "You are a helpful assistant.",
-        "user": "{user_input}",
-        "assistant": "{assistant_response}"
-    }
-        self.tokenizer.chat_template = chat_template
+        self.tokenizer.chat_template = original_tokenizer.chat_template
 
 
         if self.tokenizer.pad_token is None or self.tokenizer.pad_token == self.tokenizer.eos_token:

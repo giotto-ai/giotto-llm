@@ -11,7 +11,7 @@ setup:
 	sudo apt install python3.10 python3.10-dev python3.10-venv python3-pip --yes
 	sudo apt install tree htop nano --yes
 	pip3 install -U pip
-	pip3 install poetry==1.8.3
+	pip3 install poetry==1.8.5
 
 build:
 	poetry build

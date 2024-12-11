@@ -27,6 +27,12 @@ def parse_arguments_main() -> EasyDict:
         help="Run the kaggle mode solution",
     )
 
+    parser.add_argument(
+        "--use_unsloth",
+        action="store_true",
+        help="Use unsloth for fine-tuning and inference",
+    )
+
     default_data_dir = f"{ROOT_PATH}/kaggle/input"
     parser.add_argument(
         "--dataset_dir",
@@ -292,6 +298,7 @@ def parse_arguments_main() -> EasyDict:
         {
             "num_tasks_per_gpu_process": arguments.num_tasks_per_gpu_process,
             "kaggle_mode": arguments.kaggle_mode,
+            "use_unsloth": arguments.use_unsloth,
             "logger": logger,
             "dataset_dir": arguments.dataset_dir,
             "dataset_category": arguments.dataset_category,

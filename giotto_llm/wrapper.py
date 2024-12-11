@@ -27,7 +27,7 @@ from .prompts.grid_formatter import GridFormatter
 from .transforms import Transforms, _BackTransformTestOutput, backtransform_test_output
 from .type_aliases import Attempts, Grid, JSONTask, OAIMessage
 from .utils import RepeatSampler, write_json, split_tasks_by_test
-
+from unsloth import FastLanguageModel
 
 class EvaluationConfig(BaseModel):
     """Config for customizing evaluation behavior.
@@ -138,6 +138,9 @@ class ModelWrapper:
     ) -> dict[str, Attempts]:
         """Make predictions for all tasks."""
         self.model.eval()
+        if self.use_unsloth:
+            FastLanguageModel.for_inference(self.model)
+            logger.info("\n===========Using Unsloth For Inference============\n")
         limit_colors = self.data_config["compress_colors"]
         assert isinstance(limit_colors, bool)
         if config.n_transforms == 1:
@@ -841,13 +844,10 @@ class ModelWrapper:
         for i, batch in enumerate(dataloader):
             # HERE VERY EASY TO ADD CACHING. ALL THE INPUT PROMPTS ARE THE SAME
             # RUN THE MODEL ON INPUT PROMPT ONCE AND THEN USE CACHE FOR ALL THE ATTEMPTS. BUT FOR NOW IMPLEMENTED BRUTE FORCE
-            for key in batch:
-                batch[key] = batch[key].to(device=self.model.device)     
-            logits = self.model(**batch).logits.detach()
-            log_likelihoods = self._get_log_likelihoods_from_logits(logits, batch["labels"].detach())
+            logits = self.model(input_ids=batch["input_ids"].to(device=self.model.device), 
+                                attention_mask=batch["attention_mask"].to(device=self.model.device)).logits.to("cpu") 
+            log_likelihoods = self._get_log_likelihoods_from_logits(logits, batch["labels"])
             scores.extend(log_likelihoods.tolist())
-            for key in batch:
-                batch[key] = batch[key].detach().cpu()
             gc.collect()
             torch.cuda.synchronize()
             torch.cuda.empty_cache()

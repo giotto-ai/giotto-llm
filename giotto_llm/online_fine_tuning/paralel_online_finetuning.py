@@ -317,6 +317,9 @@ def assemble_commmand_from_arguments(
     if arguments["kaggle_mode"]:
         cmd.append("--kaggle_mode")
     
+    if arguments["use_unsloth"]:
+        cmd.append("--use_unsloth")
+    
     if arguments["eval_rigid_transforms_all"]:
         cmd.append("--eval_rigid_transforms_all")
 

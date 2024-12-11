@@ -47,6 +47,7 @@ class OnlineFinetuningConfig(BaseModel):
     """
 
     kaggle_mode: bool = False
+    use_unsloth: bool = False
     model_id: str
     wrapper: Literal["CausalLM", "Molmo", "QwenVL"]
     output_dir: str

@@ -28,7 +28,7 @@ from selection import EvalTool
 
 # input paths
 base_model = 'da-fr/Llama-3.2-3B-ARChitects-ReArc-bnb-4bit'  # auto-downloaded from huggingface.co
-arc_data_path = os.path.join('input', 'arc-prize-2024')  # as on kaggle arc prize 2024
+arc_data_path = os.path.join('input', '..', 'kaggle')
 
 # output paths
 output_path = 'output_evaluation_Llama-rearc_with_ttt'
@@ -37,8 +37,8 @@ inference_cache = os.path.join(output_path, 'inference_cache')
 submission_file = os.path.join(output_path, 'submission.json')
 
 # load evaluation dataset
-arc_eval_set = ArcDataset.load_from_json(os.path.join(arc_data_path, 'arc-agi_evaluation_challenges.json'))
-arc_eval_set = arc_eval_set.load_solutions(os.path.join(arc_data_path, 'arc-agi_evaluation_solutions.json'))
+arc_eval_set = ArcDataset.load_from_json(os.path.join(arc_data_path, 'arc-agi_test_challenges.json'))
+arc_eval_set = arc_eval_set.load_solutions(os.path.join(arc_data_path, 'arc-agi_test_solutions.json'))
 
 # load model
 retrain = not os.path.exists(save_model_path)

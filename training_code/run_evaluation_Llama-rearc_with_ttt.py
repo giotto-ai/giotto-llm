@@ -28,7 +28,7 @@ from selection import EvalTool
 
 # input paths
 base_model = 'da-fr/Llama-3.2-3B-ARChitects-ReArc-bnb-4bit'  # auto-downloaded from huggingface.co
-arc_data_path = os.path.join('input', '..', 'kaggle')
+arc_data_path = os.path.join('..', 'kaggle', 'input')
 
 # output paths
 output_path = 'output_evaluation_Llama-rearc_with_ttt'

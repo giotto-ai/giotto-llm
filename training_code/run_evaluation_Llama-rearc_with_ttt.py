@@ -15,7 +15,7 @@
 import os
 import json
 from unsloth import FastLanguageModel
-from unsloth import UnslothTrainer as Trainer, unsloth_train, is_bfloat16_supported
+from unsloth import UnslothTrainer as Trainer,  is_bfloat16_supported
 from unsloth import UnslothTrainingArguments as TrainingArguments
 from datasets import Dataset
 from diskcache import Cache
@@ -109,7 +109,6 @@ if retrain:
             report_to='none',
         ),
     )
-    trainer_stats = unsloth_train(trainer)
     save_model_and_tokenizer(save_model_path, model, tokenizer)
 
 # run inference

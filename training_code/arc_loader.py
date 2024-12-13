@@ -51,6 +51,10 @@ class ArcDataset(object):
         )
 
     def load_solutions(self, solutions_file):  # for loading solutions in kaggle json arc dataset format
+        print("Current working directory:", os.getcwd())
+
+        # Script file location
+        print("Script file location:", os.path.dirname(os.path.abspath(__file__)))
         with open(solutions_file) as f: solutions = f.read()
         data = json.loads(solutions)
         solutions = {k: data[k] for k in self.challenge}

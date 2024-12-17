@@ -53,8 +53,11 @@ class EvaluationConfig(BaseModel):
     save_generation_metadata: bool = False
     generation_config: dict[str, Any] = {"max_new_tokens": 1024, "num_return_sequences": 1}
     dfs_sampling: bool = False
-    dfs_config: dict[str, Any] = {"max_new_tokens": 1024, "threshold": 0.1, "batch_size": 6}
+    dfs_config: dict[str, Any] = {"max_new_tokens": 1024, "threshold": 0.1}
+    bfs_sampling: bool = False
+    bfs_config: dict[str, Any] = {"max_new_tokens": 1024, "threshold": 0.1, "batch_size": 6}
     selection_with_augmentation: bool = False
+    selection_threshold: float = 0.1
 
     class Config:
         protected_namespaces = ()
@@ -182,7 +185,7 @@ class ModelWrapper:
         self.num_dataloader_workers = config.n_dataloader_workers
         dataloader = DataLoader(
             dataset,
-            batch_size=config.batch_size,
+            batch_size=1 if config.dfs_sampling else config.batch_size, # DFS sampling requires batch size 1
             shuffle=False,
             sampler=RepeatSampler(config.n_transforms, len(dataset)),
             num_workers=config.n_dataloader_workers,
@@ -211,7 +214,6 @@ class ModelWrapper:
                 try:
                     responses, log_likelihoods = self.batched_bfs_sampling(batch_inputs["input_ids"], batch_inputs["attention_mask"], 
                                                                            config.dfs_config, logger)
-
                     batch_indices = [batch_indices[i] for i in range(batch_size) for _ in range(len(responses[i]))]
                     backtransforms = [backtransforms[i] for i in range(batch_size) for _ in range(len(responses[i]))]
                     responses = [response for i in range(batch_size) for response in responses[i]]
@@ -291,6 +293,8 @@ class ModelWrapper:
             task_attempts, task_log_likelihoods = self._compute_scores_with_augmentation(
                 tasks=tasks,
                 task_attempts=task_attempts,
+                task_log_likelihoods=task_log_likelihoods,
+                threshold=0,
                 n_attempts=config.n_attempts,
                 logger=logger,
             )
@@ -437,6 +441,7 @@ class ModelWrapper:
     def dfs_sampling(
         self, 
         input_ids: torch.Tensor, 
+        attention_mask: torch.Tensor,
         dfs_config: dict,
         logger: logging.Logger
     ) -> list[list[tuple[float, list[int]]]]:
@@ -460,13 +465,15 @@ class ModelWrapper:
 
         for batch_idx in range(batch_size):
             input_prompt = input_ids[batch_idx].tolist()
+            input_attention_mask = attention_mask[batch_idx].tolist()
             logger.info(f"Generating sequences for batch item {batch_idx} and prompt length {len(input_prompt)}")
             self.max_len = len(input_prompt) + dfs_config["max_new_tokens"] # Maximum length of the sequence
             
             output = self._explore(
                 tokens=input_prompt,
+                attention_mask = input_attention_mask,
                 score=0,
-                cache=None,
+                cache=[None],
                 logger=logger
             )
             for seq, score in output:
@@ -480,8 +487,9 @@ class ModelWrapper:
     def _explore(
         self,
         tokens: list[int],
+        attention_mask: list[int],
         score: float,
-        cache: dict | None = None,
+        cache: list | None = None,
         logger: logging.Logger | None = None
     ) -> list[tuple[float, list[int]]]:
         """
@@ -490,28 +498,37 @@ class ModelWrapper:
         Args:
             tokens: Current sequence of token IDs.
             score: Cumulative negative log probability.
-            cache: Key-value cache for the current sequence.
+            cache: [Key-value cache for the current sequence.]
         Returns:
             List of tuples (sequence, log_probability of the output) for valid continuations.
         """
         # Stop condition
-        if tokens[-1] == self.eos_id or len(tokens) >= self.max_len:
+        if tokens[-1] == self.eos_id:
             logger.info(f"Stopping at token {len(tokens)} with score {score}, EOS={tokens[-1] == self.eos_id}, max_len={len(tokens) >= self.max_len}")
             return [(tokens.copy(), score)]  # Copy tokens for immutability
         
-        # Move cache to GPU when needed
-        cache = tuple(tuple(tensor.to(self.model.device) for tensor in layer_cache) for layer_cache in cache) if cache else None
-        input_ids = torch.tensor([[tokens[-1]]] if cache else [tokens], dtype=torch.long, device=self.model.device)
+        if len(tokens) >= self.max_len:
+            return  []
+        
+        input_ids = torch.tensor([[tokens[-1]]] if cache[0] else [tokens], dtype=torch.long, device=self.model.device)
+        input_attention_mask = torch.tensor([attention_mask], dtype=torch.long, device=self.model.device)
+        if cache[0] and len(tokens) < cache[0][0][0].shape[2]:  # cut back key-value-cache when backtracking
+            cache[0] = tuple(tuple(c[:, :, :len(tokens)] for c in layer) for layer in cache[0])
 
-        output = self.model(input_ids=input_ids, past_key_values=cache, use_cache=True)
-        logits, cache = output.logits, output.past_key_values # logits: (batch_size=1, sequence_length, vocab_size)
+        if cache[0] and self.use_unsloth:
+            position_ids=torch.tensor([[len(tokens)]], device=self.model.device)
+            output = self.model(input_ids=input_ids, attention_mask=input_attention_mask, 
+                                past_key_values=cache[0],  position_ids=position_ids)[:2]
+            logits, cache[0] = output
+        else:
+            output = self.model(input_ids=input_ids, attention_mask=input_attention_mask, 
+                                past_key_values=cache[0], use_cache=True) # logits: (batch_size=1, sequence_length, vocab_size)
+            logits, cache[0] = output.logits, output.past_key_values 
+
         next_token_logits = logits[0, -1, :]  # Logits for the last token
         next_token_log_probs = F.log_softmax(next_token_logits, dim=-1)
 
-        # Move cache to CPU to free GPU memory
-        cache = tuple(tuple(tensor.to("cpu") for tensor in layer_cache) for layer_cache in cache)
-
-        del input_ids
+        del input_ids, input_attention_mask
         del output, logits
         gc.collect()
         torch.cuda.synchronize()
@@ -526,9 +543,11 @@ class ModelWrapper:
         for next_token_id in valid_next_tokens.tolist():
             next_score = score + next_token_log_probs[next_token_id].item() 
             tokens.append(next_token_id)  # Modify tokens in place
-            continuations = self._explore(tokens, next_score, cache, logger)
+            attention_mask.append(1)  # Modify attention mask in place
+            continuations = self._explore(tokens, attention_mask, next_score, cache, logger)
             valid_sequences.extend(continuations)
             tokens.pop()  # Backtrack
+            attention_mask.pop()
 
         del cache
         gc.collect()
@@ -632,9 +651,9 @@ class ModelWrapper:
                         next_sequence = sequence + [next_token_id]
 
                         # Stop condition
-                        if next_token_id == eos_id or len(next_sequence) >= max_len:
+                        if next_token_id == eos_id:
                             completed_sequences.append((next_sequence, next_score))
-                        else:
+                        elif len(next_sequence) < max_len:
                             next_input_ids.append([next_token_id])
                             next_caches.append(current_caches[i])
                             new_sequences.append((next_sequence, next_score))
@@ -684,11 +703,12 @@ class ModelWrapper:
         """        
         eos_id = self.tokenizer.eos_token_id
         threshold = np.log(dfs_config["threshold"])  # Convert probability to log-prob space
-        batch_size = dfs_config["batch_size"]
+        bfs_batch_size = dfs_config["batch_size"]
 
-        logger.info(f"BFS Sampling with threshold={dfs_config['threshold']} and batch size={batch_size}")
+        logger.info(f"BFS Sampling with threshold={dfs_config['threshold']} and batch size={bfs_batch_size}")
 
-        prompt_lengths = [len(batch_input_ids[i]) for i in range(len(batch_input_ids))]
+        prompt_length = len(batch_input_ids[0])
+        max_length = prompt_length + dfs_config["max_new_tokens"]
 
         # To return at least one sequence let's generate greedy sequence as well.
         #batch_greedy_sequence = [(batch_input_ids[i].tolist(), 0, None) for i in range(len(batch_input_ids))]  # List of (sequence, score, cache)
@@ -706,31 +726,33 @@ class ModelWrapper:
             next_caches = []
             next_sequences = []
             
-            for batch_start in range(0, len(current_sequences), batch_size):
-                input_ids_batch = current_input_ids[batch_start:batch_start+batch_size]
-                attention_mask_batch = attention_masks[[batch_idx for (_, _, batch_idx) in current_sequences[batch_start:batch_start+batch_size]]]
-                caches_batch = current_caches[batch_start:batch_start+batch_size] if current_caches else None
-
+            for batch_start in range(0, len(current_sequences), bfs_batch_size):
+                input_ids_batch = current_input_ids[batch_start:batch_start+bfs_batch_size]
+                attention_mask_batch = attention_masks[[batch_idx for (_, _, batch_idx) in current_sequences[batch_start:batch_start+bfs_batch_size]]]
+                caches_batch = current_caches[batch_start:batch_start+bfs_batch_size] if current_caches else None
+                
                 input_ids_batch = torch.tensor(input_ids_batch, dtype=torch.long, device=self.model.device)
-                # expand attention mask to batch_size x seq_len by adding 1s for new tokens
+                # expand attention mask to bfs_batch_size x seq_len by adding 1s for new tokens
                 attention_mask_batch = torch.cat([attention_mask_batch, torch.ones((len(attention_mask_batch), bfs_layer))], dim=1).to(self.model.device)
                 caches_batch = self.move_cache_to_device(self.pack_list_of_caches(caches_batch), self.model.device)
-        
-                output = self.model(input_ids=input_ids_batch, attention_mask=attention_mask_batch, past_key_values=caches_batch, use_cache=True) 
-                logits, caches_batch = output.logits, output.past_key_values # batch_size x seq_len x vocab_size
-                next_token_logits = logits[:, -1, :]  # batch_size x vocab_size
-                next_token_log_probs = F.log_softmax(next_token_logits, dim=-1) # batch_size x vocab_size
+
+                # position ids: Necessary to solve the Uncloth caching problem
+                if caches_batch is not None and self.use_unsloth:
+                    position_ids = (prompt_length + bfs_layer)*torch.ones(((len(input_ids_batch), 1)), dtype=torch.long, device=self.model.device)
+                    output = self.model(input_ids=input_ids_batch, attention_mask=attention_mask_batch, past_key_values=caches_batch,
+                                     position_ids=position_ids)
+                    logits, caches_batch = output[:2]
+                else:
+                    output = self.model(input_ids=input_ids_batch, attention_mask=attention_mask_batch, past_key_values=caches_batch, use_cache=True) 
+                    logits, caches_batch = output.logits, output.past_key_values # bfs_batch_size x seq_len x vocab_size
+              
+                next_token_logits = logits[:, -1, :]  # bfs_batch_size x vocab_size
+                next_token_log_probs = F.log_softmax(next_token_logits, dim=-1) # bfs_batch_size x vocab_size
 
                 # Unpack caches for the next round
                 caches_batch = self.unpack_cache(caches_batch, device="cpu")
 
-                for i, (sequence, score, batch_idx) in enumerate(current_sequences[batch_start:batch_start+batch_size]):
-                    # #Continue greedy search
-                    # greedy_token = torch.argmax(next_token_log_probs[i]).item()
-                    # greedy_score = score + next_token_log_probs[i, greedy_token].item()
-                    # logger.info(f"Greedy search: {greedy_token} {greedy_score}")
-                    # if greedy_score >= batch_greedy_sequence[batch_idx][1]:
-                    #     batch_greedy_sequence[batch_idx] = (sequence + [greedy_token], greedy_score, caches_batch[i])
+                for i, (sequence, score, batch_idx) in enumerate(current_sequences[batch_start:batch_start+bfs_batch_size]):
                     # Compute valid next tokens
                     valid_next_tokens = torch.where(score + next_token_log_probs[i] >= threshold)[0].tolist()
     
@@ -744,32 +766,18 @@ class ModelWrapper:
                         next_sequence = sequence + [next_token_id]
 
                         # Stop condition
-                        if next_token_id == eos_id or len(next_sequence) >= prompt_lengths[batch_idx] + dfs_config["max_new_tokens"]:
+                        if next_token_id == eos_id:
                             completed_sequences.append((next_sequence, next_score, batch_idx))
-                        else:
+                        elif len(next_sequence) < max_length:
                             next_input_ids.append([next_token_id])
                             next_caches.append(caches_batch[i])
                             next_sequences.append((next_sequence, next_score, batch_idx))
                         
-                    
-                
                 del output, logits, next_token_logits, next_token_log_probs
                 del input_ids_batch, caches_batch
                 gc.collect()
                 torch.cuda.synchronize()
                 torch.cuda.empty_cache()
-            
-            # for i in range(len(batch_greedy_sequence)):
-            #     seq, score, cache = batch_greedy_sequence[i]
-            #     if seq is None:
-            #         continue
-            #     if seq[-1] == eos_id or len(seq) >= prompt_lengths[i] + dfs_config["max_new_tokens"]:
-            #         completed_sequences.append((seq, score, i))
-            #         batch_greedy_sequence[i] = (None, np.inf, None)
-            #     else:
-            #         next_input_ids.append([seq[-1]])
-            #         next_caches.append(cache)
-            #         next_sequences.append((seq, score, i))
 
             current_input_ids = next_input_ids
             current_caches = next_caches
@@ -780,10 +788,10 @@ class ModelWrapper:
             del next_input_ids, next_caches, next_sequences
 
         # Collect completed sequences
-        sequences, scores = [[] for _ in range(batch_size)], [[] for _ in range(batch_size)]
+        sequences, scores = [[] for _ in range(len(batch_input_ids))], [[] for _ in range(len(batch_input_ids))]
         for (seq, score, batch_idx) in completed_sequences:
             scores[batch_idx].append(score)
-            sequences[batch_idx].append(self.tokenizer.decode(seq[prompt_lengths[batch_idx]:], skip_special_tokens=False))
+            sequences[batch_idx].append(self.tokenizer.decode(seq[prompt_length:], skip_special_tokens=False))
 
         return sequences, scores
     
@@ -792,18 +800,23 @@ class ModelWrapper:
         self,
         tasks: dict[str, JSONTask],
         task_attempts: dict[str, list[Grid]],
+        task_log_likelihoods: dict[str, list[float]],
         n_attempts: int | None,
         logger: logging.Logger,
+        threshold: float = 0,
     ) -> tuple[dict[str, list[Grid]], dict[str, list[float]]]:
         splited_tasks = split_tasks_by_test(tasks)
         scores = defaultdict(list)
         for task_id in list(task_attempts.keys()):
-            unique_attempts = set([str(attempt) for attempt in task_attempts[task_id]])
+            # Remove attempts with probability less than threshold and keep only uniques
+            unique_attempts = set([str(attempt) for attempt, log_prob in zip(task_attempts[task_id], task_log_likelihoods[task_id]) if threshold == 0 or log_prob > np.log(threshold)])
             task_attempts[task_id] = [json.loads(attempt) for attempt in unique_attempts]
+            logger.info(f"Task {task_id} has {len(task_attempts[task_id])} unique attempts after pruning with threshold {threshold}")
             if n_attempts is not None and len(task_attempts[task_id]) <= n_attempts:
-                logger.info(f"Task {task_id} has less than {n_attempts} unique attempts. Skipping selection with augmentation.")
+                logger.info(f"There are less than {n_attempts} unique attempts. Skipping selection with augmentation.")
                 scores[task_id] = [0.0] * len(task_attempts[task_id])
                 continue
+            logger.info(f"Running selection with augmentation.")
             for attempt in task_attempts[task_id]:
                 input_attempt = copy.deepcopy(splited_tasks[task_id])
                 input_attempt["test"][0]["output"] = attempt
@@ -942,7 +955,8 @@ class ModelWrapper:
             skip_special_tokens=False,
         )
         return response
-
+    
+    # DOUBLE CHECK THIS FUNCTION
     def _get_log_likelihoods(self, output: GenerateDecoderOnlyOutput, input_size: int) -> Tensor:
         # Remove input tokens, as well as start/end tokens.
         generated_tokens = output.sequences[:, input_size:]

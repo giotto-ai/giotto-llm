@@ -431,8 +431,9 @@ def main(
             logger.info("Training model")
             trainer.train()
             logger.info("Saving model")
-            # trainer.model.to("cpu")
-            # trainer.save_model(config.output_dir)
+            if not config.use_unsloth:
+                trainer.model.to("cpu")
+                trainer.save_model(config.output_dir)
             logger.info(f"Saving {wrapper.grid_formatter=}")
             wrapper.grid_formatter.save(config.output_dir)
 
@@ -484,7 +485,7 @@ def main(
                     model_config,
                     f"{raw_prediction_dir}/submission_{task_name}.json",
                     f"{image_prediction_dir}/{task_name}",
-                    wrapper=wrapper
+                    wrapper=wrapper if config.use_unsloth else None,
                 )
 
                 solved_tasks += solved

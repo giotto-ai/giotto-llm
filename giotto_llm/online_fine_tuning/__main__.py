@@ -44,7 +44,7 @@ BASE_CONFIG = {
             "num_return_sequences": 1,
             "num_beams": 1,
         },
-        "dfs_sampling": False,
+        "dfs_sampling": True,  # NOTE: changed
         "dfs_config": {
             "max_new_tokens": 1024,
             "threshold": 0.1,
@@ -248,9 +248,8 @@ def save_eval_results(  # type: ignore
     return count_solved, total
 
 
-def run_inference(logger, task_name, demo_tasks, model_config, submission_save_path, wrapper=None):  # type: ignore
-    if wrapper is None:
-        wrapper = model_config["wrapper"](**model_config["wrapper_kwargs"])
+def run_inference(logger, task_name, demo_tasks, model_config, submission_save_path, wrapper):  # type: ignore
+
     results = wrapper.evaluate(
         tasks={task_name: demo_tasks},
         logger=logger,
@@ -318,19 +317,20 @@ def main(
     for i, (task_name, demo_tasks) in enumerate(subset_tasks):
         output_dir = os.path.join(base_config.output_dir, f"{task_name}")
         try:
-            save_original_model = os.path.join(output_dir, "original")
-            save_merged_model = os.path.join(output_dir, "merged")
+            # NOTE: not needed as we can pass wrapper around
+            # save_original_model = os.path.join(output_dir, "original")
+            # save_merged_model = os.path.join(output_dir, "merged")
 
             if os.path.exists(f"{raw_prediction_dir}/submission_{task_name}.json"):
                 logger.info(f"The task {task_name} is already attempted")
                 continue
 
             os.makedirs(output_dir, exist_ok=True)
-            os.makedirs(save_original_model, exist_ok=True)
-            os.makedirs(save_merged_model, exist_ok=True)
+            # os.makedirs(save_original_model, exist_ok=True)
+            # os.makedirs(save_merged_model, exist_ok=True)
 
             config = copy.deepcopy(base_config)
-            config.output_dir = save_original_model
+            config.output_dir = output_dir
 
             wrapper_cls = MAP_WRAPPER[config.wrapper]
             wrapper = wrapper_cls(  # type: ignore
@@ -356,6 +356,7 @@ def main(
 
             logger.info(f"Target modules: {lora_config['target_modules']}")
 
+            logger.info(f">>> D: {config.use_unsloth=}")
             if config.use_unsloth:
                 logger.info("\n===========Using Unsloth For Training============\n")
                 lora_config["target_modules"] = [
@@ -377,6 +378,7 @@ def main(
                     **lora_config,
                 )
             else:
+
                 peft_config = LoraConfig(task_type="CAUSAL_LM", **lora_config)
 
             sft_config = get_sft_config(config=config)
@@ -476,11 +478,12 @@ def main(
 
             if config.kaggle_mode:
                 run_inference(  # type: ignore
-                    logger,
-                    task_name,
-                    demo_tasks,
-                    model_config,
-                    f"{raw_prediction_dir}/submission_{task_name}.json",
+                    logger=logger,
+                    task_name=task_name,
+                    demo_tasks=demo_tasks,
+                    model_config=model_config,
+                    submission_save_path=f"{raw_prediction_dir}/submission_{task_name}.json",
+                    wrapper=wrapper,
                 )
             else:
                 solved, total = save_eval_results(  # type: ignore

@@ -30,7 +30,7 @@ __pycache__/
 /finetuned_models
 /wheels
 /models
-/llm_prompts/tests/tmp*
+/giotto_llm/tests/tmp_*
 /store
 /subs
 

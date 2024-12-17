@@ -27,7 +27,7 @@ from inference_tools import inference_run
 from selection import EvalTool
 
 # input paths
-base_model = 'da-fr/Llama-3.2-3B-ARChitects-ReArc-bnb-4bit'  # auto-downloaded from huggingface.co
+base_model = 'da-fr/Mistral-NeMo-Minitron-8B-ARChitects-Full-bnb-4bit'  # auto-downloaded from huggingface.co
 arc_data_path = os.path.join('..', 'kaggle', 'input')
 
 # output paths

@@ -160,16 +160,20 @@ def transform_task(
 
     if transforms.rigid is True:
         k = np.random.randint(0, 8)
-        for subset in transformed_task.values():
-            for example in subset:
-                for key, item in example.items():
-                    if len(item) == 0:
-                        continue
-                    example[key] = RIGID_TRANSFORMS[k](item)
         back_transform["rigid_index"] = k
+        transformed_task = rigid_transform(transformed_task, k)
 
     return transformed_task, _BackTransformTestOutput(**back_transform)  # type: ignore[arg-type]
 
+def rigid_transform(task: JSONTask, k: int) -> Grid:
+    transformed_task = copy.deepcopy(task)
+    for subset in transformed_task.values():
+        for example in subset:
+            for key, item in example.items():
+                if len(item) == 0:
+                    continue
+                example[key] = RIGID_TRANSFORMS[k](item)
+    return transformed_task
 
 def backtransform_test_output(grid: Grid, backtransform: _BackTransformTestOutput) -> Grid:
     if backtransform.test is True:

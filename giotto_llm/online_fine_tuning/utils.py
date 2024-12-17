@@ -47,6 +47,7 @@ class OnlineFinetuningConfig(BaseModel):
     """
 
     kaggle_mode: bool = False
+    use_unsloth: bool = False
     model_id: str
     wrapper: Literal["CausalLM", "Molmo", "QwenVL"]
     output_dir: str
@@ -65,6 +66,7 @@ class OnlineFinetuningConfig(BaseModel):
     eval_batch_size: int = 1
     eval_n_attempts: int = 2
     eval_n_transforms: int = 4
+    eval_rigid_transforms_all: bool = False
     eval_num_return_sequences: int = 1
     eval_num_beams: int = 1
     gradient_accumulation_steps: int = 4

@@ -27,6 +27,12 @@ def parse_arguments_main() -> EasyDict:
         help="Run the kaggle mode solution",
     )
 
+    parser.add_argument(
+        "--use_unsloth",
+        action="store_true",
+        help="Use unsloth for fine-tuning and inference",
+    )
+
     default_data_dir = f"{ROOT_PATH}/kaggle/input"
     parser.add_argument(
         "--dataset_dir",
@@ -140,6 +146,12 @@ def parse_arguments_main() -> EasyDict:
     )
 
     parser.add_argument(
+        "--eval_rigid_transforms_all",
+        action="store_true",
+        help="If used, applies all 8 rigid transforms to all tasks and then performs `n_transforms` using other transformations like color permutation, example re-ordering, etc. Number of transoformed tasks will be 8 * n_transforms.",
+    )
+
+    parser.add_argument(
         "--eval_num_return_sequences",
         type=int,
         default=1,
@@ -175,7 +187,7 @@ def parse_arguments_main() -> EasyDict:
     parser.add_argument(
         "--prompt_type",
         type=str,
-        default="prompt_solve_instr_v1",
+        default="prompt_solve_short",
         help="The type of text prompt to use",
     )
 
@@ -286,6 +298,7 @@ def parse_arguments_main() -> EasyDict:
         {
             "num_tasks_per_gpu_process": arguments.num_tasks_per_gpu_process,
             "kaggle_mode": arguments.kaggle_mode,
+            "use_unsloth": arguments.use_unsloth,
             "logger": logger,
             "dataset_dir": arguments.dataset_dir,
             "dataset_category": arguments.dataset_category,
@@ -302,6 +315,7 @@ def parse_arguments_main() -> EasyDict:
             "eval_batch_size": arguments.eval_batch_size,
             "eval_n_attempts": arguments.eval_n_attempts,
             "eval_n_transforms": arguments.eval_n_transforms,
+            "eval_rigid_transforms_all": arguments.eval_rigid_transforms_all,
             "eval_num_return_sequences": arguments.eval_num_return_sequences,
             "eval_num_beams": arguments.eval_num_beams,
             "gradient_accumulation_steps": arguments.gradient_accumulation_steps,

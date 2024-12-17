@@ -520,9 +520,7 @@ def is_main_process() -> bool:
 if __name__ == "__main__":
     # Causes warnings otherwise
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    if "HF_TOKEN" in os.environ:
-        HF_TOKEN = os.environ["HF_TOKEN"]
-        hf_login(token=HF_TOKEN, add_to_git_credential=False)
+
     args = parse_arguments_main()
     config = OnlineFinetuningConfig(
         kaggle_mode=args["kaggle_mode"],

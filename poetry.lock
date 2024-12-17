@@ -7593,31 +7593,36 @@ tutorials = ["matplotlib", "pandas", "tabulate"]
 
 [[package]]
 name = "trl"
-version = "0.8.6"
+version = "0.11.4"
 description = "Train transformer language models with reinforcement learning."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "trl-0.8.6-py3-none-any.whl", hash = "sha256:0c9ee3faa7a6ddc158debaea0f725edb3143b4cc43babc5b5a05374de3e6352c"},
-    {file = "trl-0.8.6.tar.gz", hash = "sha256:3785683f5b3e20d4b28481070dbdf736def42bcd6d3323e8a92f458925683da3"},
+    {file = "trl-0.11.4-py3-none-any.whl", hash = "sha256:071d64164c152ef65b44d15f878793b28d3340310c9e157dc3608bbe5fa549a9"},
+    {file = "trl-0.11.4.tar.gz", hash = "sha256:de52a023fc35d580ab809fd74cd4f362a259e463bb968580e0e97e1b98a0fe79"},
 ]
 
 [package.dependencies]
 accelerate = "*"
 datasets = "*"
-numpy = ">=1.18.2"
+numpy = [
+    {version = ">=1.18.2", markers = "platform_system != \"Windows\""},
+    {version = "<2", markers = "platform_system == \"Windows\""},
+]
 torch = ">=1.4.0"
-transformers = ">=4.31.0"
+transformers = ">=4.40.0"
 tyro = ">=0.5.11"
 
 [package.extras]
 benchmark = ["deepspeed", "ghapi", "openrlbenchmark (==0.2.1a5)", "requests", "wandb"]
-deepspeed = ["deepspeed (>=0.9.5)"]
-dev = ["accelerate", "bitsandbytes (<=0.41.1)", "deepspeed", "deepspeed (>=0.9.5)", "diffusers (>=0.18.0)", "ghapi", "openrlbenchmark (==0.2.1a5)", "parameterized", "peft (>=0.4.0)", "pytest", "pytest-cov", "pytest-xdist", "requests", "wandb"]
+deepspeed = ["deepspeed (>=0.14.4)"]
+dev = ["Pillow", "bitsandbytes (<=0.41.1)", "deepspeed", "deepspeed (>=0.14.4)", "diffusers (>=0.18.0)", "ghapi", "huggingface-hub (>=0.22.2)", "liger-kernel (>=0.2.1)", "llm-blender (>=0.0.2)", "openai (>=1.23.2)", "openrlbenchmark (==0.2.1a5)", "parameterized", "peft (>=0.8.0)", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-xdist", "requests", "scikit-learn", "wandb"]
 diffusers = ["diffusers (>=0.18.0)"]
-peft = ["peft (>=0.4.0)"]
+liger = ["liger-kernel (>=0.2.1)"]
+llm-judge = ["huggingface-hub (>=0.22.2)", "llm-blender (>=0.0.2)", "openai (>=1.23.2)"]
+peft = ["peft (>=0.8.0)"]
 quantization = ["bitsandbytes (<=0.41.1)"]
-test = ["accelerate", "parameterized", "pytest", "pytest-cov", "pytest-xdist"]
+test = ["Pillow", "llm-blender (>=0.0.2)", "parameterized", "peft (>=0.8.0)", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-xdist", "scikit-learn"]
 
 [[package]]
 name = "trove-classifiers"
@@ -8724,4 +8729,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "dcd0f9c76cac7d8f1f9059120a3a1ddd63ff67c7cebf47c87fb1a1c8de65b0db"
+content-hash = "76d636322bb3a25c7af48e2fb1d4c474b71cfb34fdc2530f19a2c89ed56ab554"

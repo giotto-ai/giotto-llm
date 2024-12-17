@@ -14,7 +14,7 @@ from .consts import DEFAULT_ATTEMPT
 from .prompts.consts import TYPES_OF_PROMPTS
 from .prompts.grid_formatter import GridFormatter
 from .prompts.text_prompts import PromptSolveShort, TextPromptBase
-from .transforms import Transforms, _BackTransformTestOutput, transform_task, rigid_transform
+from .transforms import Transforms, _BackTransformTestOutput, rigid_transform, transform_task
 from .type_aliases import JSONTask, OAIMessage
 from .utils import split_tasks_by_test
 
@@ -78,7 +78,9 @@ class Dataset(torch.utils.data.Dataset):
         )
 
         if self.rigid_transforms_all:
-            assert self.transforms.rigid is False, "Cannot use rigid transforms with rigid_transforms_all"
+            assert (
+                self.transforms.rigid is False
+            ), "Cannot use rigid transforms with rigid_transforms_all"
             self.new_tasks = {}
             self.keys = []
             self.rigid_index = []

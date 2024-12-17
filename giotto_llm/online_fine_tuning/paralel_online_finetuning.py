@@ -56,9 +56,7 @@ def process_batch(
         start_index_tasks=batch_start,
         end_index_tasks=batch_end,
     )
-    log_file_gpu = os.path.join(
-        str(logs_dir_path), f"{model_name}_gpu_{gpu_index}.log"
-    )
+    log_file_gpu = os.path.join(str(logs_dir_path), f"{model_name}_gpu_{gpu_index}.log")
     logger.info(f">>> Going to run the following command as subprocess")
     logger.info(f"\t- {cmd}")
 
@@ -316,10 +314,10 @@ def assemble_commmand_from_arguments(
 
     if arguments["kaggle_mode"]:
         cmd.append("--kaggle_mode")
-    
+
     if arguments["use_unsloth"]:
         cmd.append("--use_unsloth")
-    
+
     if arguments["eval_rigid_transforms_all"]:
         cmd.append("--eval_rigid_transforms_all")
 

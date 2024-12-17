@@ -165,6 +165,7 @@ def transform_task(
 
     return transformed_task, _BackTransformTestOutput(**back_transform)  # type: ignore[arg-type]
 
+
 def rigid_transform(task: JSONTask, k: int) -> Grid:
     transformed_task = copy.deepcopy(task)
     for subset in transformed_task.values():
@@ -174,6 +175,7 @@ def rigid_transform(task: JSONTask, k: int) -> Grid:
                     continue
                 example[key] = RIGID_TRANSFORMS[k](item)
     return transformed_task
+
 
 def backtransform_test_output(grid: Grid, backtransform: _BackTransformTestOutput) -> Grid:
     if backtransform.test is True:

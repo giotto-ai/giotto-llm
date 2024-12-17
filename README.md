@@ -95,7 +95,3 @@ or
 - [Lots of data](https://huggingface.co/neoneye): millions of synthetically generated tasks
 - [Unsloth](https://github.com/unslothai/unsloth): fine-tune LLMs. Also with quantization.
 - [Fine-tuning example](https://mlabonne.github.io/blog/posts/2024-07-29_Finetune_Llama31.html): how to fine-tune and quantize a LLM model from HugginFace
-
-## Notes
-- The current version of this repository is using version `4.43.2` of the `transformer` package, which is different from version `4.42.3` in the Kaggle environemnt.
-- The current version of this repository is using version `1.7.1` of the `polars` package, which is different from version `1.1.0` in the Kaggle environemnt.

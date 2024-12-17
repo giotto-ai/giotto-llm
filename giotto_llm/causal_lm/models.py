@@ -6,14 +6,15 @@ import torch
 from accelerate import PartialState
 from torch import Tensor
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
+from unsloth import FastLanguageModel
+from unsloth.chat_templates import get_chat_template
 
 from ..prompts.grid_formatter import GridFormatter
 from ..transforms import _BackTransformTestOutput
 from ..type_aliases import JSONTask, OAIMessage
 from ..utils import BNBConfig, is_launched_with_torchrun
 from ..wrapper import ModelWrapper
-from unsloth import FastLanguageModel
-from unsloth.chat_templates import get_chat_template
+
 
 class CausalLMWrapper(ModelWrapper):
     """Wrapper for CausalLM models."""
@@ -60,15 +61,15 @@ class CausalLMWrapper(ModelWrapper):
         self.use_unsloth = use_unsloth
         if self.use_unsloth:
             self.model, self.tokenizer = FastLanguageModel.from_pretrained(
-                model_name = model_id,
-                max_seq_length = 10000,
-                load_in_4bit = True,
-                dtype = "auto",
+                model_name=model_id,
+                max_seq_length=10000,
+                load_in_4bit=True,
+                dtype="auto",
                 **config,
             )
             self.tokenizer = get_chat_template(
                 self.tokenizer,
-                chat_template = "llama-3.1",
+                chat_template="llama-3.1",
             )
         else:
             # Increase the max supported number of tokens
@@ -78,11 +79,11 @@ class CausalLMWrapper(ModelWrapper):
             )
             config.update(
                 {
-                   "quantization_config": BNBConfig[quantization],
-                   "config": model_config,
-                    "torch_dtype": "auto", # If set to None, this can cause nan issues in log-likelihoods (due to fp16)
+                    "quantization_config": BNBConfig[quantization],
+                    "config": model_config,
+                    "torch_dtype": "auto",  # If set to None, this can cause nan issues in log-likelihoods (due to fp16)
                 }
-            ) 
+            )
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_id,
                 **config,

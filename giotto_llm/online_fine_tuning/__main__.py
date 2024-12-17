@@ -11,6 +11,7 @@ from huggingface_hub._login import _login as hf_login
 from peft import LoraConfig
 from transformers import EarlyStoppingCallback
 from trl import SFTConfig, SFTTrainer
+from unsloth import FastLanguageModel
 
 from giotto_llm.causal_lm.models import CausalLMWrapper
 from giotto_llm.consts import DEFAULT_ATTEMPT, ROOT_PATH
@@ -26,7 +27,6 @@ from giotto_llm.transforms import Transforms, transform_task
 from giotto_llm.type_aliases import JSONTask
 from giotto_llm.utils import is_tf32_supported, split_tasks_by_test, write_json
 from giotto_llm.wrapper import EvaluationConfig
-from unsloth import FastLanguageModel
 
 BASE_CONFIG = {
     "wrapper": CausalLMWrapper,
@@ -53,6 +53,7 @@ BASE_CONFIG = {
         "selection_with_augmentation": True,
     },
 }
+
 
 def get_sft_config(config: OnlineFinetuningConfig) -> SFTConfig:
     """Get the SFTConfig"""
@@ -104,7 +105,7 @@ def get_sft_config(config: OnlineFinetuningConfig) -> SFTConfig:
         dataset_text_field="",  # need a dummy field for collator
         dataset_kwargs={"skip_prepare_dataset": True},  # important for collator
         dataloader_pin_memory=not config.low_memory,
-        weight_decay = 0.01,
+        weight_decay=0.01,
     )
     sft_config.remove_unused_columns = False
     return sft_config
@@ -174,8 +175,8 @@ def save_eval_results(  # type: ignore
     model_config,
     submission_save_path,
     image_save_path,
-    wrapper=None
-):  
+    wrapper=None,
+):
     logger.info("Starting evaluation")
     tasks = ReaderOneOnlineFinetuning(
         task_name, demo_tasks, test_solutions=test_solutions, is_test=True
@@ -337,11 +338,11 @@ def main(
                 gpu_index=gpu_index,
                 quantization=config.quantization,
                 online_finetuning=True,
-                use_unsloth=config.use_unsloth
+                use_unsloth=config.use_unsloth,
             )
 
             lora_config = {
-                "target_modules" : (
+                "target_modules": (
                     wrapper._target_modules
                     if config.lora_target_modules is None
                     else config.lora_target_modules
@@ -350,28 +351,33 @@ def main(
                 "lora_alpha": config.lora_alpha,
                 "r": config.lora_r,
                 "bias": "none",
-                "use_rslora": True
+                "use_rslora": True,
             }
 
             logger.info(f"Target modules: {lora_config['target_modules']}")
 
             if config.use_unsloth:
                 logger.info("\n===========Using Unsloth For Training============\n")
-                lora_config["target_modules"] = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
-                lora_config["lora_dropout"] = 0 # unsloth optimized for 0 dropout
+                lora_config["target_modules"] = [
+                    "q_proj",
+                    "k_proj",
+                    "v_proj",
+                    "o_proj",
+                    "gate_proj",
+                    "up_proj",
+                    "down_proj",
+                ]
+                lora_config["lora_dropout"] = 0  # unsloth optimized for 0 dropout
                 wrapper.model = FastLanguageModel.get_peft_model(
                     wrapper.model,
                     # [NEW] "unsloth" uses 30% less VRAM, fits 2x larger batch sizes!
-                    use_gradient_checkpointing = True, # "unsloth", # True or "unsloth" for very long context
-                    random_state = 42,
-                    loftq_config = None, # And LoftQ,
-                    **lora_config
+                    use_gradient_checkpointing=True,  # "unsloth", # True or "unsloth" for very long context
+                    random_state=42,
+                    loftq_config=None,  # And LoftQ,
+                    **lora_config,
                 )
             else:
-                peft_config = LoraConfig(
-                    task_type="CAUSAL_LM",
-                    **lora_config
-                )
+                peft_config = LoraConfig(task_type="CAUSAL_LM", **lora_config)
 
             sft_config = get_sft_config(config=config)
 
@@ -438,7 +444,7 @@ def main(
             wrapper.grid_formatter.save(config.output_dir)
 
             model_config = copy.deepcopy(BASE_CONFIG)
-            
+
             if config.use_unsloth:
                 model_config["wrapper_kwargs"]["model_id"] = config.output_dir  # type: ignore
                 model_config["wrapper_kwargs"]["use_unsloth"] = True  # type: ignore

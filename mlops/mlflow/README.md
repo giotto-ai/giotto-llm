@@ -25,7 +25,7 @@ cd $HOME
 python3.10 -m venv python-venv
 source python-venv/bin/activate
 pip install -U pip
-pip install poetry==1.8.3
+pip install poetry==1.8.5
 ```
 
 Then

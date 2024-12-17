@@ -12,7 +12,8 @@ from ..transforms import _BackTransformTestOutput
 from ..type_aliases import JSONTask, OAIMessage
 from ..utils import BNBConfig, is_launched_with_torchrun
 from ..wrapper import ModelWrapper
-
+from unsloth import FastLanguageModel
+from unsloth.chat_templates import get_chat_template
 
 class CausalLMWrapper(ModelWrapper):
     """Wrapper for CausalLM models."""
@@ -38,17 +39,12 @@ class CausalLMWrapper(ModelWrapper):
         ) = None,
         config: dict[str, Any] = {},
         online_finetuning: bool = False,
+        use_unsloth: bool = False,
     ):
         if quantization is None:
             quantization = "8bit-6"
-        # Increase the max supported number of tokens
-        model_config = AutoConfig.from_pretrained(model_id)
-        model_config.max_position_embeddings = max(
-            model_config.max_position_embeddings, self._min_max_position_embeddings
-        )
         # Merge default config with the given one
         config = {
-            "quantization_config": BNBConfig[quantization],
             "device_map": (
                 {"": PartialState().local_process_index}
                 if is_launched_with_torchrun()
@@ -58,19 +54,43 @@ class CausalLMWrapper(ModelWrapper):
                     else {"": torch.cuda.current_device()}  # type: ignore
                 )
             ),
-            "config": model_config,
-            "torch_dtype": "auto",  # If set to None, this can cause nan issues in log-likelihoods (due to fp16)
             "trust_remote_code": True,
         } | config
         self.model_id = model_id
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_id,
-            **config,
-        )
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_id,
-            trust_remote_code=True,
-        )
+        self.use_unsloth = use_unsloth
+        if self.use_unsloth:
+            self.model, self.tokenizer = FastLanguageModel.from_pretrained(
+                model_name = model_id,
+                max_seq_length = 10000,
+                load_in_4bit = True,
+                dtype = "auto",
+                **config,
+            )
+            self.tokenizer = get_chat_template(
+                self.tokenizer,
+                chat_template = "llama-3.1",
+            )
+        else:
+            # Increase the max supported number of tokens
+            model_config = AutoConfig.from_pretrained(model_id)
+            model_config.max_position_embeddings = max(
+                model_config.max_position_embeddings, self._min_max_position_embeddings
+            )
+            config.update(
+                {
+                   "quantization_config": BNBConfig[quantization],
+                   "config": model_config,
+                    "torch_dtype": "auto", # If set to None, this can cause nan issues in log-likelihoods (due to fp16)
+                }
+            ) 
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                **config,
+            )
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_id,
+                trust_remote_code=True,
+            )
 
         if self.tokenizer.pad_token is None or self.tokenizer.pad_token == self.tokenizer.eos_token:
             # Handle special cases here instead of subclassing for 1 line

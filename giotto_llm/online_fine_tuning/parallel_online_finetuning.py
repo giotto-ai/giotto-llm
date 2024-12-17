@@ -57,7 +57,7 @@ def process_batch(
         end_index_tasks=batch_end,
     )
     log_file_gpu = os.path.join(
-        str(logs_dir_path), f"output_validation_{model_name}_gpu_{gpu_index}.log"
+        str(logs_dir_path), f"{model_name}_gpu_{gpu_index}.log"
     )
     logger.info(f">>> Going to run the following command as subprocess")
     logger.info(f"\t- {cmd}")
@@ -282,6 +282,16 @@ def assemble_commmand_from_arguments(
         str(arguments["learning_rate"]),
         "--batch_size",
         str(arguments["batch_size"]),
+        "--eval_batch_size",
+        str(arguments["eval_batch_size"]),
+        "--eval_n_attempts",
+        str(arguments["eval_n_attempts"]),
+        "--eval_n_transforms",
+        str(arguments["eval_n_transforms"]),
+        "--eval_num_return_sequences",
+        str(arguments["eval_num_return_sequences"]),
+        "--eval_num_beams",
+        str(arguments["eval_num_beams"]),
         "--gradient_accumulation_steps",
         str(arguments["gradient_accumulation_steps"]),
         "--num_train_epochs",
@@ -320,6 +330,12 @@ def assemble_commmand_from_arguments(
 
     if arguments["kaggle_mode"]:
         cmd.append("--kaggle_mode")
+    
+    if arguments["use_unsloth"]:
+        cmd.append("--use_unsloth")
+    
+    if arguments["eval_rigid_transforms_all"]:
+        cmd.append("--eval_rigid_transforms_all")
 
     return cmd
 

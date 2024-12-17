@@ -26,34 +26,27 @@ from giotto_llm.transforms import Transforms, transform_task
 from giotto_llm.type_aliases import JSONTask
 from giotto_llm.utils import is_tf32_supported, split_tasks_by_test, write_json
 from giotto_llm.wrapper import EvaluationConfig
+from unsloth import FastLanguageModel
 
-CONFIG = {
+BASE_CONFIG = {
     "wrapper": CausalLMWrapper,
     "wrapper_kwargs": {
         "quantization": "no",
     },
     "evaluation_config": {
+        "rigid_transforms_all": True,
         "generation_config": {
             "max_new_tokens": 1024,
         },
+        "dfs_sampling": True,
+        "dfs_config": {
+            "max_new_tokens": 1024,
+            "threshold": 0.1,
+            "batch_size": 6,
+        },
+        "selection_with_augmentation": True,
     },
 }
-
-
-def get_peft_config(
-    target_modules: list[str] | str, dropout: float, alpha: int, r: int
-) -> LoraConfig:
-    """LoRA config based on QLoRA paper & Sebastian Raschka experiment"""
-    return LoraConfig(
-        lora_alpha=alpha,
-        lora_dropout=dropout,
-        r=r,
-        bias="none",
-        target_modules=target_modules,
-        use_rslora=True,
-        task_type="CAUSAL_LM",
-    )
-
 
 def get_sft_config(config: OnlineFinetuningConfig) -> SFTConfig:
     """Get the SFTConfig"""
@@ -105,6 +98,7 @@ def get_sft_config(config: OnlineFinetuningConfig) -> SFTConfig:
         dataset_text_field="",  # need a dummy field for collator
         dataset_kwargs={"skip_prepare_dataset": True},  # important for collator
         dataloader_pin_memory=not config.low_memory,
+        weight_decay = 0.01,
     )
     sft_config.remove_unused_columns = False
     return sft_config
@@ -174,13 +168,17 @@ def save_eval_results(  # type: ignore
     model_config,
     submission_save_path,
     image_save_path,
-):
+    wrapper=None
+):  
+    logger.info("Starting evaluation")
     tasks = ReaderOneOnlineFinetuning(
         task_name, demo_tasks, test_solutions=test_solutions, is_test=True
     ).read_tasks()
+    if wrapper is None:
+        wrapper = model_config["wrapper"](**model_config["wrapper_kwargs"])
+    else:
+        logger.info("Running Infrence Without Merging Adaptor")
 
-    wrapper = model_config["wrapper"](**model_config["wrapper_kwargs"])
-    logger.info("Starting evaluation")
     results = wrapper.evaluate(
         tasks=tasks,
         logger=logger,
@@ -243,8 +241,9 @@ def save_eval_results(  # type: ignore
     return count_solved, total
 
 
-def run_inference(logger, task_name, demo_tasks, model_config, submission_save_path):  # type: ignore
-    wrapper = model_config["wrapper"](**model_config["wrapper_kwargs"])
+def run_inference(logger, task_name, demo_tasks, model_config, submission_save_path, wrapper=None):  # type: ignore
+    if wrapper is None:
+        wrapper = model_config["wrapper"](**model_config["wrapper_kwargs"])
     results = wrapper.evaluate(
         tasks={task_name: demo_tasks},
         logger=logger,
@@ -267,14 +266,6 @@ def run_inference(logger, task_name, demo_tasks, model_config, submission_save_p
                     "attempt_2": DEFAULT_ATTEMPT if len(grids) == 1 else grids[1],
                 }
             )
-
-            # plot_predictions(
-            #     demo_tasks,
-            #     test_id=idx_i,
-            #     predictions=attempts_task_id[-1].values(),
-            #     save_path=f"test_{idx_i}.png",
-            #     test_ouput_exists=False
-            # )
 
     with open(submission_save_path, "w") as f:
         json.dump({task_name: attempts_task_id}, f)
@@ -340,17 +331,41 @@ def main(
                 gpu_index=gpu_index,
                 quantization=config.quantization,
                 online_finetuning=True,
+                use_unsloth=config.use_unsloth
             )
-            peft_config = get_peft_config(
-                target_modules=(
+
+            lora_config = {
+                "target_modules" : (
                     wrapper._target_modules
                     if config.lora_target_modules is None
                     else config.lora_target_modules
                 ),
-                dropout=config.lora_dropout,
-                alpha=config.lora_alpha,
-                r=config.lora_r,
-            )
+                "lora_dropout": config.lora_dropout,
+                "lora_alpha": config.lora_alpha,
+                "r": config.lora_r,
+                "bias": "none",
+                "use_rslora": True
+            }
+
+            logger.info(f"Target modules: {lora_config['target_modules']}")
+
+            if config.use_unsloth:
+                logger.info("\n===========Using Unsloth For Training============\n")
+                lora_config["target_modules"] = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+                lora_config["lora_dropout"] = 0 # unsloth optimized for 0 dropout
+                wrapper.model = FastLanguageModel.get_peft_model(
+                    wrapper.model,
+                    # [NEW] "unsloth" uses 30% less VRAM, fits 2x larger batch sizes!
+                    use_gradient_checkpointing = True, # "unsloth", # True or "unsloth" for very long context
+                    random_state = 42,
+                    loftq_config = None, # And LoftQ,
+                    **lora_config
+                )
+            else:
+                peft_config = LoraConfig(
+                    task_type="CAUSAL_LM",
+                    **lora_config
+                )
 
             sft_config = get_sft_config(config=config)
 
@@ -369,6 +384,9 @@ def main(
                 task_name=task_name,
                 demo_tasks=demo_tasks,
             )
+
+            logger.info("Length of train dataset: %d", len(train_dataset))
+
             eval_dataset = None
             if not config.kaggle_mode:
                 eval_dataset = get_eval_dataset(
@@ -387,7 +405,7 @@ def main(
                     train_dataset=train_dataset,
                     eval_dataset=eval_dataset,
                     data_collator=wrapper.collate_fn_train,
-                    peft_config=peft_config,
+                    peft_config=None if config.use_unsloth else peft_config,
                     callbacks=callbacks,
                 )
             except ValueError as e:
@@ -407,30 +425,37 @@ def main(
             logger.info("Training model")
             trainer.train()
             logger.info("Saving model")
-            trainer.model.to("cpu")
-            trainer.save_model(config.output_dir)
+            if not config.use_unsloth:
+                trainer.model.to("cpu")
+                trainer.save_model(config.output_dir)
             logger.info(f"Saving {wrapper.grid_formatter=}")
             wrapper.grid_formatter.save(config.output_dir)
 
-            finetuned_config = OnlineFinetuningConfig.parse_file(
-                f"{config.output_dir}/finetuning_config.json"
-            )
-            merge_model(
-                finetuned_config, adaptor_path=config.output_dir, merge_path=save_merged_model  # type: ignore
-            )
-
-            subprocess.run(["rm", "-rf", config.output_dir])
+            model_config = copy.deepcopy(BASE_CONFIG)
+            
+            if config.use_unsloth:
+                model_config["wrapper_kwargs"]["model_id"] = config.output_dir  # type: ignore
+                model_config["wrapper_kwargs"]["use_unsloth"] = True  # type: ignore
+            else:
+                finetuned_config = OnlineFinetuningConfig.parse_file(
+                    f"{config.output_dir}/finetuning_config.json"
+                )
+                merge_model(
+                    finetuned_config, adaptor_path=config.output_dir, merge_path=save_merged_model  # type: ignore
+                )
+                model_config["wrapper_kwargs"]["model_id"] = save_merged_model  # type: ignore
+                subprocess.run(["rm", "-rf", config.output_dir])
 
             logger.info(" -- Evaluating Model --")
 
-            model_config = copy.deepcopy(CONFIG)
-            model_config["wrapper_kwargs"]["model_id"] = save_merged_model  # type: ignore
+            model_config["wrapper"] = wrapper_cls
             model_config["evaluation_config"]["batch_size"] = config.eval_batch_size  # type: ignore
             model_config["evaluation_config"]["n_attempts"] = config.eval_n_attempts  # type: ignore
             model_config["evaluation_config"]["n_transforms"] = config.eval_n_transforms  # type: ignore
             model_config["evaluation_config"]["constraints_strategy"] = config.eval_constraints_strategy  # type: ignore
             model_config["evaluation_config"]["selection_weights_method"] = config.eval_selection_weights_method  # type: ignore
             model_config["evaluation_config"]["selection_threshold"] = config.eval_selection_threshold  # type: ignore
+            model_config["evaluation_config"]["rigid_transforms_all"] = config.eval_rigid_transforms_all  # type: ignore
             model_config["evaluation_config"]["generation_config"][  # type: ignore
                 "num_return_sequences"
             ] = config.eval_num_return_sequences
@@ -457,6 +482,7 @@ def main(
                     model_config,
                     f"{raw_prediction_dir}/submission_{task_name}.json",
                     f"{image_prediction_dir}/{task_name}",
+                    wrapper=wrapper if config.use_unsloth else None,
                 )
 
                 solved_tasks += solved
@@ -491,6 +517,7 @@ if __name__ == "__main__":
     args = parse_arguments_main()
     config = OnlineFinetuningConfig(
         kaggle_mode=args["kaggle_mode"],
+        use_unsloth=args["use_unsloth"],
         model_id=args["model_id"],
         wrapper=args["wrapper"],
         dataset_dir=args["dataset_dir"],
@@ -503,6 +530,7 @@ if __name__ == "__main__":
         eval_batch_size=args["eval_batch_size"],
         eval_n_attempts=args["eval_n_attempts"],
         eval_n_transforms=args["eval_n_transforms"],
+        eval_rigid_transforms_all=args["eval_rigid_transforms_all"],
         eval_num_return_sequences=args["eval_num_return_sequences"],
         eval_num_beams=args["eval_num_beams"],
         eval_selection_threshold=args["eval_selection_threshold"],

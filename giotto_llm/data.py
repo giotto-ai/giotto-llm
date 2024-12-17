@@ -16,7 +16,7 @@ from .consts import DEFAULT_ATTEMPT
 from .prompts.consts import TYPES_OF_PROMPTS
 from .prompts.grid_formatter import GridFormatter
 from .prompts.text_prompts import PromptSolveShort, TextPromptBase
-from .transforms import Transforms, _BackTransformTestOutput, transform_task
+from .transforms import Transforms, _BackTransformTestOutput, transform_task, rigid_transform
 from .type_aliases import JSONTask, OAIMessage
 from .utils import split_tasks_by_test
 
@@ -61,14 +61,15 @@ class Dataset(torch.utils.data.Dataset):
         messages_fn: TextPromptBase = PromptSolveShort(grid_formatter=GridFormatter()),
         model_type: Literal["image-text-to-text", "text-to-text"] = "image-text-to-text",
         constraints_strategy: Literal["no", "token_subset", "valid"] = "valid",
+        rigid_transforms_all: bool = False,
     ):
 
         self.tasks = split_tasks_by_test(tasks)
         self.keys = list(self.tasks.keys())
         self.transforms = transforms
-        self.size = len(self.tasks)
         self.messages_fn = messages_fn
         self.model_type = model_type
+        self.rigid_transforms_all = rigid_transforms_all
         if model_type == "image-text-to-text" and transforms.limit_colors is False:
             raise RuntimeError("Image-models need to use the limit_colors transform")
         self.task_to_oai = (
@@ -79,9 +80,21 @@ class Dataset(torch.utils.data.Dataset):
         self.constraints_strategy = constraints_strategy
         self.add_task_id = False
 
+        if self.rigid_transforms_all:
+            assert self.transforms.rigid is False, "Cannot use rigid transforms with rigid_transforms_all"
+            self.new_tasks = {}
+            self.keys = []
+            self.rigid_index = []
+            for key, task in self.tasks.items():
+                for i in range(8):
+                    self.new_tasks[f"{key}@{i}"] = rigid_transform(task=task, k=i)
+                    self.keys.append(f"{key}@{i}")
+                    self.rigid_index.append(i)
+            self.tasks = self.new_tasks
+
     def __len__(self) -> int:
         """The size of the dataset."""
-        return self.size
+        return len(self.tasks)
 
     def __getitem__(
         self, idx: int
@@ -98,8 +111,9 @@ class Dataset(torch.utils.data.Dataset):
             transformed_task["task_id"] = self.keys[idx]  # type: ignore[assignment]
 
         oai_message = self.task_to_oai(task=transformed_task, messages_fn=self.messages_fn)
-        return oai_message, transformed_task, constraints, idx, backtransform
-
+        if self.rigid_transforms_all:
+            backtransform.rigid_index = self.rigid_index[idx]
+        return oai_message, transformed_task, idx, backtransform
 
 class ConversationDataset(torch.utils.data.Dataset):
     """Dataset class for conversations.

@@ -31,7 +31,7 @@ base_model = 'da-fr/Mistral-NeMo-Minitron-8B-ARChitects-Full-bnb-4bit'  # auto-d
 arc_data_path = os.path.join('..', 'kaggle', 'input')
 
 # output paths
-output_path = 'output_evaluation_Llama-rearc_with_ttt'
+output_path = 'output_evaluation_Llama-rearc_with_ttt_nenomix'
 save_model_path = os.path.join(output_path, 'finetuned_model')
 inference_cache = os.path.join(output_path, 'inference_cache')
 submission_file = os.path.join(output_path, 'submission.json')

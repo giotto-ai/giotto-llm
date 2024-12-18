@@ -327,7 +327,7 @@ class ModelWrapper:
                 task_id = dataset.keys[idx]
                 if config.rigid_transforms_all:
                     task_id = task_id.split("@")[0]
-                task_attempts[task_id].append(
+                task_grids[task_id].append(
                     backtransform_test_output(grid=attempt, backtransform=backtransform)
                 )
 

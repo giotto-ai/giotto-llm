@@ -337,7 +337,7 @@ class ModelWrapper:
             logger.info("Running selection with augmentation")
             task_attempts, task_log_probs = self._compute_scores_with_augmentation(
                 tasks=tasks,
-                task_attempts=task_attempts,
+                task_attempts=task_grids,
                 task_log_likelihoods=task_log_likelihoods,
                 threshold=0,
                 n_attempts=config.n_attempts,

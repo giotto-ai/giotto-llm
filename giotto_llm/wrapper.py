@@ -898,7 +898,6 @@ class ModelWrapper:
             messages_fn=self.messages_fn,
             model_type=self.model_type,
             transforms=transforms,
-            image_resize_factor=0, # for vision model set properly
             rigid_transforms_all=True
         )
     

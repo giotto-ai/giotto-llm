@@ -69,7 +69,7 @@ def get_sft_config(config: OnlineFinetuningConfig) -> SFTConfig:
         per_device_train_batch_size=config.per_device_batch_size,
         per_device_eval_batch_size=config.per_device_batch_size,
         gradient_accumulation_steps=config.gradient_accumulation_steps,
-        max_seq_length=20_000,  # Not used for anything with custom collator
+        max_seq_length=6144,  # Not used for anything with custom collator
         eval_accumulation_steps=config.gradient_accumulation_steps,
         torch_empty_cache_steps=1 if config.low_memory is True else None,
         fp16_full_eval=config.low_memory,
@@ -207,9 +207,6 @@ def save_eval_results(  # type: ignore
                 logger.info(f">>> Evaluating {idx_i=} for {task_id=}")
                 grids = attempts[idx_i]
                 expected_grid = tasks[task_id]["test"][idx_i]["output"]
-
-                # logger.info(f">>> Grids\n{grids}\n{expected_grid}")
-                logger.info("---")
 
                 for grid in grids:
                     if grid == expected_grid:
@@ -444,11 +441,33 @@ def main(
             logger.info("Training model")
             trainer.train()
             logger.info("Saving model")
-            if not config.use_unsloth:
-                trainer.model.to("cpu")
-                trainer.save_model(config.output_dir)
+            # ---
+            # Note: changed
+            # if not config.use_unsloth:
+            #     trainer.model.to("cpu")
+            #     trainer.save_model(config.output_dir)
+            #     logger.info(f"Saved to {config.output_dir=}")
+            print(id(wrapper.model))
+            print(id(trainer.model))
+            print(type(wrapper.model))
+            print(wrapper.model.device)
+            print(wrapper.model.dtype)
+            print(type(wrapper.tokenizer))
+            # trainer.model.to("cpu")
+            wrapper.model.save_pretrained_merged(
+                config.output_dir,
+                wrapper.tokenizer,
+                save_method="merged_16bit",
+                safe_serialization=False,
+            )
+            # trainer.save_model(config.output_dir)
+            logger.info(f"Saved to {config.output_dir=}")
+            # ---
+
             logger.info(f"Saving {wrapper.grid_formatter=}")
             wrapper.grid_formatter.save(config.output_dir)
+
+            raise ValueError("stop")
 
             model_config = copy.deepcopy(BASE_CONFIG)
 
@@ -515,7 +534,7 @@ def main(
 
         torch.cuda.empty_cache()
         # remove the original and merged models
-        subprocess.run(["rm", "-rf", output_dir])
+        # subprocess.run(["rm", "-rf", output_dir])
 
     with open(f"{failed_tasks_dir}/failed_tasks_gpu_{gpu_index}.json", "w") as f:
         json.dump(failed_tasks, f)
@@ -578,6 +597,6 @@ if __name__ == "__main__":
     )
 
     total_time_end = time.time()
-    logger.info(
+    print(
         f"\n================================\n\nTotal Time: {total_time_end - total_time_start:.2f} seconds\n-----------------"
     )

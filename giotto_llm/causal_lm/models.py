@@ -62,8 +62,9 @@ class CausalLMWrapper(ModelWrapper):
         if self.use_unsloth:
             self.model, self.tokenizer = FastLanguageModel.from_pretrained(
                 model_name=model_id,
-                max_seq_length=10000,
-                load_in_4bit=True,
+                max_seq_length=6144,
+                load_in_4bit=False,
+                load_in_8bit=False,
                 dtype="auto",
                 **config,
             )

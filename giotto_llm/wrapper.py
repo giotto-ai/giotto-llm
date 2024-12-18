@@ -216,6 +216,7 @@ class ModelWrapper:
         self.messages_fn = TYPES_OF_PROMPTS[prompt_type](grid_formatter=self.grid_formatter)
         task_grids: dict[str, list[Grid]] = defaultdict(list)
         task_log_probs: dict[str, list[float]] = defaultdict(list)
+        task_log_probs_torch: dict[str, list[float]] = defaultdict(list)
         original_tasks: dict[str, JSONTask] = {}
         task_constraints: dict[str, dict[str, Any]] = {}
         dataset = Dataset(
@@ -331,11 +332,12 @@ class ModelWrapper:
                     backtransform_test_output(grid=attempt, backtransform=backtransform)
                 )
 
+                task_log_probs_torch[task_id].append(log_prob)
                 task_log_probs[task_id].append(log_prob.item())
         
         if config.selection_with_augmentation: 
             logger.info("Running selection with augmentation")
-            task_attempts, task_log_probs = self._compute_scores_with_augmentation(
+            task_attempts, task_log_probs_torch = self._compute_scores_with_augmentation(
                 tasks=tasks,
                 task_attempts=task_grids,
                 task_log_likelihoods=task_log_probs,
@@ -347,7 +349,7 @@ class ModelWrapper:
         results: dict[str, Attempts] = self._create_results(
             task_attempts=task_grids,
             n_attempts=config.n_attempts,
-            task_log_probs=task_log_probs,
+            task_log_probs=task_log_probs_torch,
             tasks=original_tasks,
             weight_method=config.selection_weights_method,
             threshold=config.selection_threshold,
@@ -877,7 +879,7 @@ class ModelWrapper:
             for attempt in task_attempts[task_id]:
                 input_attempt = copy.deepcopy(splited_tasks[task_id])
                 input_attempt["test"][0]["output"] = attempt
-                scores[task_id].append(self._compute_log_likelihoods(input_attempt, logger))
+                scores[task_id].append(torch.tensor(elf._compute_log_likelihoods(input_attempt, logger)))
         return task_attempts, scores
     
     @torch.no_grad()

@@ -4,16 +4,16 @@ import json
 import logging
 import os
 import pickle
+import time
 from collections import defaultdict
-from functools import partial
-from typing import Any, Literal, Type
+from typing import Any, Literal
 
 import numpy as np
 import psutil
 import torch
 import torch.nn.functional as F
 import transformers
-from pydantic import BaseModel, Field, ValidationError, validator
+from pydantic import BaseModel, Field, validator
 from torch import Tensor, nn
 from torch.utils.data import DataLoader
 from transformers import GenerationConfig
@@ -21,7 +21,7 @@ from transformers.generation import GenerateDecoderOnlyOutput
 from transformers.utils import ModelOutput
 from unsloth import FastLanguageModel
 
-from .consts import DATA_CONFIG_FILENAME, GRID_FORMATTER_CONFIG_FILENAME, MAX_GRID_SIZE
+from .consts import DATA_CONFIG_FILENAME, GRID_FORMATTER_CONFIG_FILENAME
 from .data import Dataset
 from .prompts.consts import TYPES_OF_PROMPTS
 from .prompts.grid_formatter import GridFormatter
@@ -187,6 +187,7 @@ class ModelWrapper:
             f"RIGID_TRANSFORMS_ALL: {config.rigid_transforms_all},  DATASET LENGTH: {len(dataset)}"
         )
         self.num_dataloader_workers = config.n_dataloader_workers
+        logger.info("D: creating DataLoader with batch_size=1")
         dataloader = DataLoader(
             dataset,
             batch_size=(
@@ -204,8 +205,9 @@ class ModelWrapper:
             output_scores=True,
             **config.generation_config,
         )
-        for i, batch in enumerate(dataloader):
-            logger.info(f"Generating batch {i+1} of {len(dataloader)}")
+        for batch_idx, batch in enumerate(dataloader):
+            start_batch_time = time.time()
+            logger.info(f"Generating batch {batch_idx+1} of {len(dataloader)}")
             batch_indices = batch["batch_indices"]
             batch_size = len(batch_indices)
             task_ids = [dataset.keys[task_index] for task_index in batch_indices]
@@ -216,6 +218,9 @@ class ModelWrapper:
 
             responses = []
 
+            logger.info("D: About to lauch inference function")
+            logger.info(f"D: {config.dfs_sampling=}")
+            logger.info(f"D: {config.dfs_config=}")
             if config.dfs_sampling:
                 try:
                     responses, log_likelihoods = self.batched_bfs_sampling(
@@ -258,30 +263,39 @@ class ModelWrapper:
                     backtransforms = batch["backtransforms"]
                     responses = []
 
-            if not responses:
-                for key in batch_inputs:
-                    batch_inputs[key] = batch_inputs[key].to(device=self.model.device)
-                output = self._generate(batch_inputs, generation_config)
-                input_size = batch_inputs["input_ids"].shape[1]
-                responses = self._decode(output.sequences, input_size=input_size)
-                log_likelihoods = self._get_log_likelihoods(output, input_size=input_size)
+            # ---
+            # Note: commented as "Whay would it fail?"
+            # ---
+            # if not responses:
+            #     for key in batch_inputs:
+            #         batch_inputs[key] = batch_inputs[key].to(device=self.model.device)
+            #     output = self._generate(batch_inputs, generation_config)
+            #     input_size = batch_inputs["input_ids"].shape[1]
+            #     responses = self._decode(output.sequences, input_size=input_size)
+            #     log_likelihoods = self._get_log_likelihoods(output, input_size=input_size)
 
-                if generation_config.num_return_sequences > 1:
-                    batch_indices = [
-                        i
-                        for i in batch_indices
-                        for _ in range(generation_config.num_return_sequences)
-                    ]
-                    backtransforms = [
-                        t
-                        for t in backtransforms
-                        for _ in range(generation_config.num_return_sequences)
-                    ]
+            #     if generation_config.num_return_sequences > 1:
+            #         batch_indices = [
+            #             i
+            #             for i in batch_indices
+            #             for _ in range(generation_config.num_return_sequences)
+            #         ]
+            #         backtransforms = [
+            #             t
+            #             for t in backtransforms
+            #             for _ in range(generation_config.num_return_sequences)
+            #         ]
+            # ---
 
-            del batch_inputs
-            gc.collect()
-            torch.cuda.synchronize()
-            torch.cuda.empty_cache()
+            # ---
+            # Note: commenting this because it was added for training
+            # when there were out-of-memory errors
+            # ---
+            # del batch_inputs
+            # gc.collect()
+            # torch.cuda.synchronize()
+            # torch.cuda.empty_cache()
+            # ---
 
             attempts = [
                 self.grid_formatter.decode_grid(
@@ -292,16 +306,17 @@ class ModelWrapper:
                 for response in responses
             ]
 
-            if config.save_generation_metadata is True:
-                self._save_generation_metadata(
-                    task_ids=[dataset.keys[task_index] for task_index in batch_indices],
-                    output=output,
-                    transformed_tasks=batch["transformed_tasks"],
-                    responses=responses,
-                    attempts=attempts,
-                    backtransforms=backtransforms,
-                    input_size=input_size,
-                )
+            # Note: what is save_generation_metadata?
+            # if config.save_generation_metadata is True:
+            #     self._save_generation_metadata(
+            #         task_ids=[dataset.keys[task_index] for task_index in batch_indices],
+            #         output=output,
+            #         transformed_tasks=batch["transformed_tasks"],
+            #         responses=responses,
+            #         attempts=attempts,
+            #         backtransforms=backtransforms,
+            #         input_size=input_size,
+            #     )
 
             for attempt, log_likelihood, idx, backtransform in zip(
                 attempts, log_likelihoods, batch_indices, backtransforms, strict=True
@@ -315,6 +330,10 @@ class ModelWrapper:
                     backtransform_test_output(grid=attempt, backtransform=backtransform)
                 )
                 task_log_likelihoods[task_id].append(log_likelihood.item())
+            end_batch_time = time.time()
+            logger.info(
+                f"Time {batch_idx=}: {end_batch_time - start_batch_time:.2f} seconds\n-----------------"
+            )
 
         if config.selection_with_augmentation:
             logger.info("Running selection with augmentation")

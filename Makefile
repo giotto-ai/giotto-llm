@@ -20,6 +20,9 @@ install-packages:
 	poetry install
 	poetry run pip install --verbose --editable .
 
+clean:
+	if [ -e ./debug_ttt ]; then rm -r ./debug_ttt/; fi
+
 #------------------------------------------
 # Utilities
 

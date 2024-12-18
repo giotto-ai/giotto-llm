@@ -13,7 +13,7 @@ import psutil
 import torch
 import torch.nn.functional as F
 import transformers
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from torch import Tensor, nn
 from torch.utils.data import DataLoader
 from transformers import GenerationConfig
@@ -65,7 +65,7 @@ class EvaluationConfig(BaseModel):
         protected_namespaces = ()
         extra = "forbid"
 
-    @validator("generation_config")
+    @field_validator("generation_config")
     def check_generation_config(
         cls: "EvaluationConfig", value: dict[str, Any], values: dict[str, Any]
     ) -> dict[str, Any]:
@@ -142,6 +142,10 @@ class ModelWrapper:
         config: EvaluationConfig = EvaluationConfig(),
     ) -> dict[str, Attempts]:
         """Make predictions for all tasks."""
+        # ! TODO: remove
+        logger.info("D: ---")
+        logger.info(f"D: starting wrapper.evaluate with {config=}")
+        # ! ---
         self.model.eval()
         if self.use_unsloth:
             FastLanguageModel.for_inference(self.model)
@@ -187,12 +191,10 @@ class ModelWrapper:
             f"RIGID_TRANSFORMS_ALL: {config.rigid_transforms_all},  DATASET LENGTH: {len(dataset)}"
         )
         self.num_dataloader_workers = config.n_dataloader_workers
-        logger.info("D: creating DataLoader with batch_size=1")
+        logger.info(f"D: creating DataLoader with batch_size={config.batch_size}")
         dataloader = DataLoader(
             dataset,
-            batch_size=(
-                1 if config.dfs_sampling else config.batch_size
-            ),  # DFS sampling requires batch size 1
+            batch_size=config.batch_size,
             shuffle=False,
             sampler=RepeatSampler(config.n_transforms, len(dataset)),
             num_workers=config.n_dataloader_workers,
@@ -218,11 +220,17 @@ class ModelWrapper:
 
             responses = []
 
+            # ! TODO: remove
             logger.info("D: About to lauch inference function")
             logger.info(f"D: {config.dfs_sampling=}")
             logger.info(f"D: {config.dfs_config=}")
+            # ! ---
             if config.dfs_sampling:
                 try:
+                    # ! TODO: remove
+                    logger.info(f"\tD: {batch_inputs['input_ids'].shape=}")
+                    logger.info(f"\tD: {batch_inputs['attention_mask'].shape=}")
+                    # ! ---
                     responses, log_likelihoods = self.batched_bfs_sampling(
                         batch_inputs["input_ids"],
                         batch_inputs["attention_mask"],
@@ -941,7 +949,7 @@ class ModelWrapper:
         task_log_likelihoods: dict[str, list[float]],
         n_attempts: int | None,
         logger: logging.Logger,
-        threshold: float = 0,
+        threshold: float = 0.0,
     ) -> tuple[dict[str, list[Grid]], dict[str, list[float]]]:
         splited_tasks = split_tasks_by_test(tasks)
         scores = defaultdict(list)

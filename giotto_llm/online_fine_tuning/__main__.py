@@ -3,18 +3,17 @@ import json
 import logging
 import os
 import subprocess
+import time
 from typing import Literal
 
-import numpy as np
 import torch
-from huggingface_hub._login import _login as hf_login
 from peft import LoraConfig
 from transformers import EarlyStoppingCallback
 from trl import SFTConfig, SFTTrainer
 from unsloth import FastLanguageModel
 
 from giotto_llm.causal_lm.models import CausalLMWrapper
-from giotto_llm.consts import DEFAULT_ATTEMPT, ROOT_PATH
+from giotto_llm.consts import DEFAULT_ATTEMPT
 from giotto_llm.data import Dataset
 from giotto_llm.finetuning.merge import merge_model
 from giotto_llm.online_fine_tuning.args import parse_arguments_main
@@ -22,11 +21,12 @@ from giotto_llm.online_fine_tuning.utils import MAP_WRAPPER, OnlineFinetuningCon
 from giotto_llm.plot.matplotlib_plots import plot_predictions
 from giotto_llm.prompts.consts import TYPES_OF_PROMPTS
 from giotto_llm.prompts.grid_formatter import GridFormatter
-from giotto_llm.reader import ReaderMany, ReaderOneOnlineFinetuning, ReaderPickle
-from giotto_llm.transforms import Transforms, transform_task
-from giotto_llm.type_aliases import JSONTask
-from giotto_llm.utils import is_tf32_supported, split_tasks_by_test, write_json
+from giotto_llm.reader import ReaderOneOnlineFinetuning
+from giotto_llm.transforms import Transforms
+from giotto_llm.utils import is_tf32_supported, write_json
 from giotto_llm.wrapper import EvaluationConfig
+
+BATCH_SIZE = 2
 
 BASE_CONFIG = {
     "wrapper": CausalLMWrapper,
@@ -35,7 +35,7 @@ BASE_CONFIG = {
         "quantization": "no",
     },
     "evaluation_config": {
-        "batch_size": 1,
+        "batch_size": BATCH_SIZE,
         "n_attempts": 2,
         "n_transforms": 4,
         "rigid_transforms_all": False,
@@ -44,11 +44,11 @@ BASE_CONFIG = {
             "num_return_sequences": 1,
             "num_beams": 1,
         },
-        "dfs_sampling": True,  # NOTE: changed
+        "dfs_sampling": True,
         "dfs_config": {
             "max_new_tokens": 1024,
             "threshold": 0.1,
-            "batch_size": 1,
+            "batch_size": BATCH_SIZE,
         },
         "selection_with_augmentation": True,
     },
@@ -250,12 +250,17 @@ def save_eval_results(  # type: ignore
 
 def run_inference(logger, task_name, demo_tasks, model_config, submission_save_path, wrapper):  # type: ignore
 
+    logger.info(f"Starting with {model_config['evaluation_config']=}")
+    config = EvaluationConfig(
+        **model_config["evaluation_config"],
+    )
+    logger.info(
+        f"and inside run_inference obtaining {config=}\nthat is passed to wrapper.evaluate()"
+    )
     results = wrapper.evaluate(
         tasks={task_name: demo_tasks},
         logger=logger,
-        config=EvaluationConfig(
-            **model_config["evaluation_config"],
-        ),
+        config=config,
     )
 
     attempts_task_id = []
@@ -521,6 +526,8 @@ def is_main_process() -> bool:
 
 
 if __name__ == "__main__":
+    total_time_start = time.time()
+
     # Causes warnings otherwise
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -568,4 +575,9 @@ if __name__ == "__main__":
         start_index_tasks=start_index_tasks,
         end_index_tasks=end_index_tasks,
         gpu_index=gpu_index,
+    )
+
+    total_time_end = time.time()
+    logger.info(
+        f"\n================================\n\nTotal Time: {total_time_end - total_time_start:.2f} seconds\n-----------------"
     )

@@ -113,7 +113,7 @@ class Dataset(torch.utils.data.Dataset):
         oai_message = self.task_to_oai(task=transformed_task, messages_fn=self.messages_fn)
         if self.rigid_transforms_all:
             backtransform.rigid_index = self.rigid_index[idx]
-        return oai_message, transformed_task, idx, backtransform
+        return oai_message, transformed_task,constraints, idx, backtransform
 
 class ConversationDataset(torch.utils.data.Dataset):
     """Dataset class for conversations.

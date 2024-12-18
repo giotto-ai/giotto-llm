@@ -34,7 +34,7 @@ BASE_CONFIG = {
         "quantization": "no",
     },
     "evaluation_config": {
-        "rigid_transforms_all": True,
+        "rigid_transforms_all": False,
         "generation_config": {
             "max_new_tokens": 1024,
         },

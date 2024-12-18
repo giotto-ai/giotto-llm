@@ -213,7 +213,7 @@ class ModelWrapper:
             )
         prompt_type = self.data_config["prompt_type"]
         assert isinstance(prompt_type, str)
-        messages_fn = TYPES_OF_PROMPTS[prompt_type](grid_formatter=self.grid_formatter)
+        self.messages_fn = TYPES_OF_PROMPTS[prompt_type](grid_formatter=self.grid_formatter)
         task_grids: dict[str, list[Grid]] = defaultdict(list)
         task_log_probs: dict[str, list[float]] = defaultdict(list)
         original_tasks: dict[str, JSONTask] = {}

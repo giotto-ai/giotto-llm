@@ -879,7 +879,7 @@ class ModelWrapper:
             for attempt in task_attempts[task_id]:
                 input_attempt = copy.deepcopy(splited_tasks[task_id])
                 input_attempt["test"][0]["output"] = attempt
-                scores[task_id].append(torch.tensor(elf._compute_log_likelihoods(input_attempt, logger)))
+                scores[task_id].append(torch.tensor(self._compute_log_likelihoods(input_attempt, logger)))
         return task_attempts, scores
     
     @torch.no_grad()

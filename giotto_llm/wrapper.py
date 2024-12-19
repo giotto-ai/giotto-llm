@@ -873,7 +873,7 @@ class ModelWrapper:
             logger.info(f"Task {task_id} has {len(task_attempts[task_id])} unique attempts after pruning with threshold {threshold}")
             if n_attempts is not None and len(task_attempts[task_id]) <= n_attempts:
                 logger.info(f"There are less than {n_attempts} unique attempts. Skipping selection with augmentation.")
-                scores[task_id] = [0.0] * len(task_attempts[task_id])
+                scores[task_id] = torch.tensor([0.0] * len(task_attempts[task_id]))
                 continue
             logger.info(f"Running selection with augmentation.")
             for attempt in task_attempts[task_id]:

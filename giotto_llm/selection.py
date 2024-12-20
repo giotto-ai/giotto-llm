@@ -19,8 +19,9 @@ def select_top_n(
     weight_method: str,
     threshold: float,
     n_attempts: int,
-    constraints: dict[str, Any] = {},
     use_majority_vote: bool,
+    constraints: dict[str, Any] = {},
+    
 ):
     """Select the top 2 attempts"""
     if len(attempts) < n_attempts:

@@ -20,6 +20,7 @@ def select_top_n(
     threshold: float,
     n_attempts: int,
     constraints: dict[str, Any] = {},
+    use_majority_vote: bool,
 ):
     """Select the top 2 attempts"""
     if len(attempts) < n_attempts:
@@ -47,11 +48,13 @@ def select_top_n(
                 dim=0,
             ).numpy()
 
-    # First to full grid majority voting
-    subset = _full_grid_majority_vote(attempts=attempts, weights=weights, threshold=threshold)
-    # Then pixelwise
-    if len(subset) < n_attempts:
-        _pixelwise_majority_vote(attempts, weights, subset)
+    if use_majority_vote:
+
+        # First to full grid majority voting
+        subset = _full_grid_majority_vote(attempts=attempts, weights=weights, threshold=threshold)
+        # Then pixelwise
+        if len(subset) < n_attempts:
+            _pixelwise_majority_vote(attempts, weights, subset)
     # Finally sorting by weight
     if len(subset) < n_attempts:
         for attempt in [attempts[idx] for idx in np.argsort(weights)[::-1]]:

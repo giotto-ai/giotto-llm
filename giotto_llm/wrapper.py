@@ -1105,9 +1105,11 @@ class ModelWrapper:
         weight_method: Optional[Literal["uniform", "ll_sum", "entropy"]],
         threshold: float,
         constraints_strategy: Literal["no", "token_subset", "valid"],
+        use_majority_vote:bool=False,
     ) -> dict[str, Attempts]:
         """Sort attempts by log-likelihood, merge and combine test examples from same tasks"""
         results: dict[str, Attempts] = defaultdict(lambda: defaultdict(list))
+        print(task_log_probs)
         for split_task_id in sorted(task_attempts.keys()):
             if "-|-" in split_task_id:
                 tokens = split_task_id.split("-|-")
@@ -1126,6 +1128,7 @@ class ModelWrapper:
                     threshold=threshold,
                     constraints=constraints[split_task_id],
                     n_attempts=n_attempts,
+                    use_majority_vote=use_majority_vote,
                 )
 
             else:

@@ -56,6 +56,8 @@ def select_top_n(
         # Then pixelwise
         if len(subset) < n_attempts:
             _pixelwise_majority_vote(attempts, weights, subset)
+    else:
+        subset=[]
     # Finally sorting by weight
     if len(subset) < n_attempts:
         for attempt in [attempts[idx] for idx in np.argsort(weights)[::-1]]:

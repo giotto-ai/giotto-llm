@@ -805,7 +805,7 @@ class ModelWrapper:
                     output = self.model(input_ids=input_ids_batch, attention_mask=attention_mask_batch, past_key_values=caches_batch, use_cache=True) 
                     logits, caches_batch = output.logits, output.past_key_values # bfs_batch_size x seq_len x vocab_size
               
-                next_token_logits = logits[:, -1, list(self.output_token_ids.values())]  # bfs_batch_size x vocab_size
+                next_token_logits = logits[:, -1, :]  # bfs_batch_size x vocab_size
                 next_token_log_probs = F.log_softmax(next_token_logits, dim=-1) # bfs_batch_size x vocab_size
 
                 # Unpack caches for the next round

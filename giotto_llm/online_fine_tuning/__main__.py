@@ -41,7 +41,7 @@ BASE_CONFIG = {
         "dfs_sampling": True,
         "dfs_config": {
             "max_new_tokens": 1024,
-            "threshold": 0.1,
+            "threshold": 0.05,
             "batch_size": 6,
         },
         "selection_with_augmentation": True,
